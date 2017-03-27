@@ -5341,10 +5341,82 @@ export class MediaApi {
      * See Account Media for more info on the properties.
      * @param accountId Account ID
      * @param mediaId Media ID
+     * @param json Media extra parameters
+     * @param file Media file
+     */
+    public replaceAccountMediaFiles (accountId: number, mediaId: number, json?: string, file?: Buffer) : Promise<{ response: http.ClientResponse; body: MediaFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/media/files/{media_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'media_id' + '}', String(mediaId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling replaceAccountMediaFiles.');
+        }
+
+        // verify required parameter 'mediaId' is not null or undefined
+        if (mediaId === null || mediaId === undefined) {
+            throw new Error('Required parameter mediaId was null or undefined when calling replaceAccountMediaFiles.');
+        }
+
+        let useFormData = false;
+
+        if (json !== undefined) {
+            formParams['json'] = json;
+        }
+
+        if (file !== undefined) {
+            formParams['file'] = file;
+        }
+        useFormData = true;
+
+        let requestOptions: request.Options = {
+            method: 'PUT',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: MediaFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Update a media object to your account. Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB.
+     * See Account Media for more info on the properties.
+     * @param accountId Account ID
+     * @param mediaId Media ID
      * @param data Media data
      */
     public replaceAccountMediaTts (accountId: number, mediaId: number, data?: CreateMediaParams) : Promise<{ response: http.ClientResponse; body: MediaFull;  }> {
-        const localVarPath = this.basePath + '/accounts/{account_id}/media/{media_id}'
+        const localVarPath = this.basePath + '/accounts/{account_id}/media/tts/{media_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
             .replace('{' + 'media_id' + '}', String(mediaId));
         let queryParameters: any = {};
