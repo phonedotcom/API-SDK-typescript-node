@@ -972,6 +972,10 @@ export class DeleteGroup {
     'success': boolean;
 }
 
+export class DeleteMedia {
+    'success': boolean;
+}
+
 export class DeleteMenu {
     'success': boolean;
 }
@@ -1422,7 +1426,7 @@ export class ListPhoneNumbers {
     /**
     * Array of Contact Phone Number Objects. See below for details.
     */
-    'items': Array<PhoneNumberContact>;
+    'items': Array<PhoneNumberFull>;
 }
 
 export class ListPhoneNumbersRegions {
@@ -5004,10 +5008,11 @@ export class MediaApi {
      * Add a media object to your account that can be used as a greeting or hold music. Users may create a media by using the built-in Text-to-speech (TTS) facility or upload a file of their choice. (Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB)
      * See Account Media for more info on the properties.
      * @param accountId Account ID
-     * @param data Media data
+     * @param json Media extra parameters
+     * @param file Media file
      */
-    public createAccountMedia (accountId: number, data?: CreateMediaParams) : Promise<{ response: http.ClientResponse; body: MediaFull;  }> {
-        const localVarPath = this.basePath + '/accounts/{account_id}/media'
+    public createAccountMediaFiles (accountId: number, json?: string, file?: Buffer) : Promise<{ response: http.ClientResponse; body: MediaFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/media/files'
             .replace('{' + 'account_id' + '}', String(accountId));
         let queryParameters: any = {};
         let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -5016,7 +5021,71 @@ export class MediaApi {
 
         // verify required parameter 'accountId' is not null or undefined
         if (accountId === null || accountId === undefined) {
-            throw new Error('Required parameter accountId was null or undefined when calling createAccountMedia.');
+            throw new Error('Required parameter accountId was null or undefined when calling createAccountMediaFiles.');
+        }
+
+        let useFormData = false;
+
+        if (json !== undefined) {
+            formParams['json'] = json;
+        }
+
+        if (file !== undefined) {
+            formParams['file'] = file;
+        }
+        useFormData = true;
+
+        let requestOptions: request.Options = {
+            method: 'POST',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: MediaFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Add a media object to your account that can be used as a greeting or hold music. Users may create a media by using the built-in Text-to-speech (TTS) facility or upload a file of their choice. (Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB)
+     * See Account Media for more info on the properties.
+     * @param accountId Account ID
+     * @param data Media data
+     */
+    public createAccountMediaTts (accountId: number, data?: CreateMediaParams) : Promise<{ response: http.ClientResponse; body: MediaFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/media/tts'
+            .replace('{' + 'account_id' + '}', String(accountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling createAccountMediaTts.');
         }
 
         let useFormData = false;
@@ -5057,15 +5126,76 @@ export class MediaApi {
         });
     }
     /**
+     * Delete an individual media record
+     * See Account Media for more info on the properties.
+     * @param accountId Account ID
+     * @param mediaId Media ID
+     */
+    public deleteAccountMedia (accountId: number, mediaId: number) : Promise<{ response: http.ClientResponse; body: DeleteMedia;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/media/{media_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'media_id' + '}', String(mediaId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling deleteAccountMedia.');
+        }
+
+        // verify required parameter 'mediaId' is not null or undefined
+        if (mediaId === null || mediaId === undefined) {
+            throw new Error('Required parameter mediaId was null or undefined when calling deleteAccountMedia.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'DELETE',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: DeleteMedia;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
      * Show details of an individual media recording (Greeting or Hold Music)
      * Get individual media recording
      * @param accountId Account ID
-     * @param recordingId Recording ID
+     * @param mediaId Media ID
      */
-    public getAccountMedia (accountId: number, recordingId: number) : Promise<{ response: http.ClientResponse; body: MediaFull;  }> {
-        const localVarPath = this.basePath + '/accounts/{account_id}/media/{recording_id}'
+    public getAccountMedia (accountId: number, mediaId: number) : Promise<{ response: http.ClientResponse; body: MediaFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/media/{media_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
-            .replace('{' + 'recording_id' + '}', String(recordingId));
+            .replace('{' + 'media_id' + '}', String(mediaId));
         let queryParameters: any = {};
         let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
         let formParams: any = {};
@@ -5076,9 +5206,9 @@ export class MediaApi {
             throw new Error('Required parameter accountId was null or undefined when calling getAccountMedia.');
         }
 
-        // verify required parameter 'recordingId' is not null or undefined
-        if (recordingId === null || recordingId === undefined) {
-            throw new Error('Required parameter recordingId was null or undefined when calling getAccountMedia.');
+        // verify required parameter 'mediaId' is not null or undefined
+        if (mediaId === null || mediaId === undefined) {
+            throw new Error('Required parameter mediaId was null or undefined when calling getAccountMedia.');
         }
 
         let useFormData = false;
@@ -5206,6 +5336,69 @@ export class MediaApi {
             });
         });
     }
+    /**
+     * Update a media object to your account. Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB.
+     * See Account Media for more info on the properties.
+     * @param accountId Account ID
+     * @param mediaId Media ID
+     * @param data Media data
+     */
+    public replaceAccountMediaTts (accountId: number, mediaId: number, data?: CreateMediaParams) : Promise<{ response: http.ClientResponse; body: MediaFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/media/{media_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'media_id' + '}', String(mediaId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling replaceAccountMediaTts.');
+        }
+
+        // verify required parameter 'mediaId' is not null or undefined
+        if (mediaId === null || mediaId === undefined) {
+            throw new Error('Required parameter mediaId was null or undefined when calling replaceAccountMediaTts.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'PUT',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: MediaFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
 }
 export enum MenusApiApiKeys {
     apiKey,
@@ -5299,7 +5492,7 @@ export class MenusApi {
     }
     /**
      * Delete an individual menu
-     * This service shows the details of an individual menu.
+     * See Account Menus for more info on the properties.
      * @param accountId Account ID
      * @param menuId Menu ID
      */
@@ -5510,7 +5703,7 @@ export class MenusApi {
     }
     /**
      * Replace an individual menu
-     * This service replaces the details of an individual Menu.
+     * See Account Menus for more info on the properties.
      * @param accountId Account ID
      * @param menuId Menu ID
      * @param data Menu data
