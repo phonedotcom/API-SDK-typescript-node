@@ -645,6 +645,14 @@ export class CreateDeviceParams {
 
 export class CreateExtensionParams {
     /**
+    * Voicemail object
+    */
+    'voicemail': Voicemail;
+    /**
+    * Call Notifications object
+    */
+    'callNotifications': CallNotifications;
+    /**
     * Caller ID
     */
     'callerId': string;
@@ -681,21 +689,9 @@ export class CreateExtensionParams {
     */
     'nameGreeting': any;
     /**
-    * Recording lookup object
-    */
-    'voicemail[greeting][alternate]': any;
-    /**
     * Local area code
     */
     'localAreaCode': number;
-    /**
-    * Enable the \"leave a message\" prompt for voicemail
-    */
-    'voicemail[greeting][enableLeaveMessagePrompt]': boolean;
-    /**
-    * Voicemail enabled
-    */
-    'voicemail[enabled]': boolean;
     /**
     * Enable outgoing calls
     */
@@ -704,38 +700,6 @@ export class CreateExtensionParams {
     * Enable Call Waiting
     */
     'enableCallWaiting': boolean;
-    /**
-    * Voicemail password
-    */
-    'voicemail[password]': number;
-    /**
-    * Voicemail greeting type
-    */
-    'voicemail[greeting][type]': string;
-    /**
-    * Recording lookup object
-    */
-    'voicemail[greeting][standard]': any;
-    /**
-    * Voicemail transcription type
-    */
-    'voicemail[transcription]': string;
-    /**
-    * Email notifications for voicemails. Can be a single email or an array of emails
-    */
-    'voicemail[notifications][emails]': Array<string>;
-    /**
-    * SMS notifications for voicemails
-    */
-    'voicemail[notifications][sms]': string;
-    /**
-    * Email notifications for calls. Can be a single email or an array of emails
-    */
-    'callNotifications[emails]': Array<string>;
-    /**
-    * SMS notifications for calls
-    */
-    'callNotifications[sms]': string;
 }
 
 export class CreateGroupParams {
@@ -820,33 +784,17 @@ export class CreatePhoneNumberParams {
     */
     'blockAnonymous': boolean;
     /**
-    * Caller ID name
+    * Caller ID object
     */
-    'callerId[name]': string;
+    'callerId': CallerIdPhoneNumber;
     /**
-    * Caller ID type
+    * SMS Forwarding Object, or NULL
     */
-    'callerId[type]': string;
+    'smsForwarding': SmsForwardingParams;
     /**
-    * 'application' or 'extension'
+    * Call Notifications object
     */
-    'smsForwarding[type]': string;
-    /**
-    * Application lookup object
-    */
-    'smsForwarding[application]': any;
-    /**
-    * Extension lookup object
-    */
-    'smsForwarding[extension]': any;
-    /**
-    * Call notifications for emails. Can be a single email or an array of emails
-    */
-    'callNotifications[emails]': Array<string>;
-    /**
-    * Call notification for SMS
-    */
-    'callNotifications[sms]': string;
+    'callNotifications': CallNotifications;
 }
 
 export class CreateQueueParams {
@@ -1765,9 +1713,13 @@ export class Recipient {
 
 export class ReplaceExtensionParams {
     /**
-    * Recording lookup object
+    * Voicemail object
     */
-    'voicemail[greeting][alternate]': any;
+    'voicemail': Voicemail;
+    /**
+    * Call Notifications object
+    */
+    'callNotifications': CallNotifications;
     /**
     * Recording lookup object
     */
@@ -1797,10 +1749,6 @@ export class ReplaceExtensionParams {
     */
     'usageType': string;
     /**
-    * Voicemail password
-    */
-    'voicemail[password]': number;
-    /**
     * Contact name
     */
     'fullName': string;
@@ -1808,14 +1756,6 @@ export class ReplaceExtensionParams {
     * Enable Call Waiting
     */
     'enableCallWaiting': boolean;
-    /**
-    * Recording lookup object
-    */
-    'voicemail[greeting][standard]': any;
-    /**
-    * Voicemail greeting type
-    */
-    'voicemail[greeting][type]': string;
     /**
     * Caller ID
     */
@@ -1825,37 +1765,9 @@ export class ReplaceExtensionParams {
     */
     'localAreaCode': number;
     /**
-    * Voicemail enabled
-    */
-    'voicemail[enabled]': boolean;
-    /**
-    * Use leave message prompt after voicemail
-    */
-    'voicemail[greeting][enableLeaveMessagePrompt]': boolean;
-    /**
-    * Voicemail transcription type
-    */
-    'voicemail[transcription]': string;
-    /**
-    * Email notifications for voicemails. Can be a single email or an array of emails
-    */
-    'voicemail[notifications][emails]': Array<string>;
-    /**
-    * SMS notifications for voicemails
-    */
-    'voicemail[notifications][sms]': string;
-    /**
-    * Email notifications for calls. Can be a single email or an array of emails
-    */
-    'callNotifications[emails]': Array<string>;
-    /**
-    * SMS notifications for calls
-    */
-    'callNotifications[sms]': string;
-    /**
     * Route object lookup (must belong to this extension)
     */
-    'route': Array<string>;
+    'route': string;
 }
 
 export class ReplaceMenuParams {
@@ -1886,37 +1798,21 @@ export class ReplacePhoneNumberParams {
     */
     'blockAnonymous': boolean;
     /**
-    * Caller ID name
+    * Caller ID object
     */
-    'callerId[name]': string;
+    'callerId': CallerIdPhoneNumber;
     /**
-    * Caller ID type
+    * SMS Forwarding Object, or NULL
     */
-    'callerId[type]': string;
-    /**
-    * 'application' or 'extension'
-    */
-    'smsForwarding[type]': string;
-    /**
-    * Application lookup object
-    */
-    'smsForwarding[application]': any;
-    /**
-    * Extension lookup object
-    */
-    'smsForwarding[extension]': any;
+    'smsForwarding': SmsForwardingParams;
     /**
     * Pool lookup object
     */
     'poolItem': any;
     /**
-    * Call notifications for emails. Can be a single email or an array of emails
+    * Call Notifications object
     */
-    'callNotifications[emails]': Array<string>;
-    /**
-    * Call notification for SMS
-    */
-    'callNotifications[sms]': string;
+    'callNotifications': CallNotifications;
 }
 
 /**
@@ -2131,6 +2027,24 @@ export class SmsForwarding {
     * Required if type = \"application\". Application that messages should be directed to. Output is an Application Summary Object. Input must be an Application Lookup Object.
     */
     'application': ApplicationSummary;
+}
+
+/**
+* SMS Forwarding Object, or NULL
+*/
+export class SmsForwardingParams {
+    /**
+    * Can be \"extension\" or \"application\"
+    */
+    'type': string;
+    /**
+    * Required if type = \"extension\". Extension that messages should be directed to. Output is an Extension Summary Object. Input must be an Extension Lookup Object.
+    */
+    'extension': number;
+    /**
+    * Required if type = \"application\". Application that messages should be directed to. Output is an Application Summary Object. Input must be an Application Lookup Object.
+    */
+    'application': number;
 }
 
 /**
