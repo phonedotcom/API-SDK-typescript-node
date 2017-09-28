@@ -298,9 +298,25 @@ export class CallLogFull {
     */
     'finalAction': string;
     /**
-    * URL of call recording if available. Empty string if call recording does not exist
+    * URL of voicemail if available. User may download the audio via this URL. Empty string if voicemail does not exist
     */
-    'callRecording': string;
+    'voicemailUrl': string;
+    /**
+    * URL of voicemail if available. User may listen to the audio online via this URL. Empty string if voicemail does not exist
+    */
+    'voicemailCpUrl': string;
+    /**
+    * Transcript of voicemail if enabled and available
+    */
+    'voicemailTranscript': string;
+    /**
+    * URL of call recording if available. User may download the audio via this URL. Empty string if call recording does not exist
+    */
+    'callRecordingUrl': string;
+    /**
+    * URL of call recording if available. User may listen to the audio online via this URL. Empty string if call recording does not exist
+    */
+    'callRecordingCpUrl': string;
     /**
     * A list of call flows from beginning of call to end of call.
     */
@@ -323,6 +339,33 @@ export class CallNotifications {
     * A phone number capable of receiving SMS messages
     */
     'sms': string;
+}
+
+export class CallbackObject {
+    /**
+    * URL of webhook, where the event is emitted to. Note: The listener supports both HTTP & HTTPS, we highly recommend that users use HTTPS on all callbacks (with user name and password) to ensure no one may send malicious events pretending to be Phone.com.
+    */
+    'url': string;
+    /**
+    * Role of callback: main or backup
+    */
+    'role': string;
+    /**
+    * HTTP method: get or post
+    */
+    'verb': string;
+    /**
+    * Optional user name needed to logon to the webhook URL
+    */
+    'username': string;
+    /**
+    * Optional password needed to logon to the webhook URL
+    */
+    'password': string;
+    /**
+    * Optional : Duration of HTTP response will time out while sending the event to the callback URL. (1 - 10 seconds)
+    */
+    'timeout': number;
 }
 
 /**
@@ -464,7 +507,7 @@ export class ContactFull {
     'updatedAt': number;
 }
 
-export class ContactSubaccount {
+export class ContactResponse {
     /**
     * Contact name
     */
@@ -546,7 +589,7 @@ export class CreateCallParams {
     /**
     * Flag to set caller ID to private
     */
-    'callerPrivate': boolean;
+    'callerPrivate': string;
     /**
     * Callee phone number in E.164 format
     */
@@ -562,7 +605,7 @@ export class CreateCallParams {
     /**
     * Flag to set callee ID to private
     */
-    'calleePrivate': boolean;
+    'calleePrivate': string;
 }
 
 export class CreateContactParams {
@@ -617,15 +660,15 @@ export class CreateContactParams {
     /**
     * Email Addresses
     */
-    'emails': Array<any>;
+    'emails': Array<Email>;
     /**
     * Phone Numbers
     */
-    'phoneNumbers': Array<any>;
+    'phoneNumbers': Array<PhoneNumberContact>;
     /**
     * Addresses
     */
-    'addresses': Array<any>;
+    'addresses': Array<AddressListContacts>;
     /**
     * Contact Group
     */
@@ -644,13 +687,7 @@ export class CreateDeviceParams {
 }
 
 export class CreateExtensionParams {
-    /**
-    * Voicemail object
-    */
-    'voicemail': Voicemail;
-    /**
-    * Call Notifications object
-    */
+    'voicemail': VoicemailInput;
     'callNotifications': CallNotifications;
     /**
     * Caller ID
@@ -661,17 +698,13 @@ export class CreateExtensionParams {
     */
     'usageType': string;
     /**
-    * Allows call waiting
-    */
-    'allowsCallWaiting': boolean;
-    /**
     * Extension number (auto-generated if empty)
     */
     'extension': number;
     /**
     * Include in dial-by-name directory
     */
-    'includeInDirectory': boolean;
+    'includeInDirectory': string;
     /**
     * Name (auto-generated if empty)
     */
@@ -691,15 +724,15 @@ export class CreateExtensionParams {
     /**
     * Local area code
     */
-    'localAreaCode': number;
+    'localAreaCode': string;
     /**
     * Enable outgoing calls
     */
-    'enableOutboundCalls': boolean;
+    'enableOutboundCalls': string;
     /**
     * Enable Call Waiting
     */
-    'enableCallWaiting': boolean;
+    'enableCallWaiting': string;
 }
 
 export class CreateGroupParams {
@@ -707,6 +740,21 @@ export class CreateGroupParams {
     * Group name
     */
     'name': string;
+}
+
+export class CreateListenerParams {
+    /**
+    * Type of listener. Must be 'callback'
+    */
+    'type': string;
+    /**
+    * Type of event to subscribe. 'call.new', 'call.update', 'call.complete'
+    */
+    'eventType': string;
+    /**
+    * Array of Callback Objects.
+    */
+    'callbacks': Array<CallbackObject>;
 }
 
 export class CreateMediaParams {
@@ -754,12 +802,70 @@ export class CreateMediaParams {
 
 export class CreateMenuParams {
     'name': string;
-    'mainMessage': any;
-    'invalidKeypressMessage': any;
-    'allowExtensionDial': boolean;
+    'greeting': any;
+    'keypressError': any;
+    'allowExtensionDial': string;
     'keypressWaitTime': number;
     'timeoutHandler': any;
     'options': Array<any>;
+}
+
+export class CreateOauthParams {
+    /**
+    * authorization_code, client_credentials, password or refresh_token
+    */
+    'grantType': string;
+    /**
+    * Client ID
+    */
+    'clientId': string;
+    /**
+    * Client Secret Key
+    */
+    'clientSecret': string;
+    /**
+    * Authorization Code created via the /oauth/authorization API
+    */
+    'code': string;
+    /**
+    * The redirect URI where user enters authentication information
+    */
+    'redirectUri': string;
+    /**
+    * account-owner, extension-user and/or methods:ALL, separated by space (%20)
+    */
+    'scope': string;
+    /**
+    * User name
+    */
+    'username': string;
+    /**
+    * Password
+    */
+    'password': string;
+    /**
+    * Refresh token
+    */
+    'refreshToken': string;
+}
+
+export class CreatePaymentParams {
+    /**
+    * Name of payment method
+    */
+    'nickname': string;
+    /**
+    * primary, onfile or hidden
+    */
+    'status': string;
+    /**
+    * Credit Card Type
+    */
+    'type': string;
+    /**
+    * Credit Card Token. Token is obtained by entering credit card info via the Credit Card Entry Form
+    */
+    'ccToken': string;
 }
 
 export class CreatePhoneNumberParams {
@@ -778,23 +884,29 @@ export class CreatePhoneNumberParams {
     /**
     * Block incoming calls
     */
-    'blockIncoming': boolean;
+    'blockIncoming': string;
     /**
     * Block anonymous calls
     */
-    'blockAnonymous': boolean;
-    /**
-    * Caller ID object
-    */
+    'blockAnonymous': string;
     'callerId': CallerIdPhoneNumber;
-    /**
-    * SMS Forwarding Object, or NULL
-    */
     'smsForwarding': SmsForwardingParams;
-    /**
-    * Call Notifications object
-    */
     'callNotifications': CallNotifications;
+}
+
+export class CreatePricingParams {
+    /**
+    * Pricing plan code
+    */
+    'pricingId': number;
+    /**
+    * Reason this pricing plan is added to the subaccount
+    */
+    'reason': string;
+    /**
+    * Pricing plan expiration time in UNIX format. Disregard or set it to null for plan which never expires
+    */
+    'expireDate': number;
 }
 
 export class CreateQueueParams {
@@ -826,6 +938,13 @@ export class CreateQueueParams {
     * Extensions or phone numbers
     */
     'members': Array<any>;
+}
+
+export class CreateRedirectUriParams {
+    /**
+    * Redirect URI string for use in redirect-based flows such as the authorization code and implicit flows
+    */
+    'redirectUri': string;
 }
 
 export class CreateRouteParams {
@@ -874,11 +993,11 @@ export class CreateSubaccountParams {
     /**
     * Contact Object. See below for details.
     */
-    'contact': ContactSubaccount;
+    'contact': ContactResponse;
     /**
     * Contact Object for billing purposes. See below for details.
     */
-    'billingContact': ContactSubaccount;
+    'billingContact': ContactResponse;
 }
 
 export class CreateTrunkParams {
@@ -912,31 +1031,7 @@ export class CreateTrunkParams {
     'codecs': Array<any>;
 }
 
-export class DeleteContact {
-    'success': boolean;
-}
-
-export class DeleteGroup {
-    'success': boolean;
-}
-
-export class DeleteMedia {
-    'success': boolean;
-}
-
-export class DeleteMenu {
-    'success': boolean;
-}
-
-export class DeleteQueue {
-    'success': boolean;
-}
-
-export class DeleteRoute {
-    'success': boolean;
-}
-
-export class DeleteTrunk {
+export class DeleteEntry {
     'success': boolean;
 }
 
@@ -1013,7 +1108,7 @@ export class ExpressServiceCodeFull {
     /**
     * UNIX time stamp representing the UTC time that the Express Service Code expires. Please note that every time this service is executed, the expire_date is set to now + 24 hours.
     */
-    'expireDate': number;
+    'expireDate': Array<number>;
 }
 
 /**
@@ -1032,6 +1127,10 @@ export class ExtensionFull {
     * Extension number that callers may dial. On POST, leaving this empty will result in an auto-generated value. On PUT, this field is required.
     */
     'extension': number;
+    /**
+    * API Account ID. Optional, object may return the voip_id.
+    */
+    'voipId': number;
     /**
     * Full name of the individual or department to which this extension is assigned
     */
@@ -1070,9 +1169,6 @@ export class ExtensionFull {
     */
     'enableOutboundCalls': boolean;
     'voicemail': Voicemail;
-    /**
-    * Call Notifications Object. See below for details.
-    */
     'callNotifications': Notification;
     /**
     * Route which will handle incoming voice and fax calls. Only valid on PUT requests, not POST. Output is a Route Summary Object if the route is named, otherwise the Full Route Object will be shown. Input must be a Route Lookup Object pointing to a named route. Route must belong to this extension already.
@@ -1168,6 +1264,43 @@ export class FilterNameNumberArray {
     'number': string;
 }
 
+export class FilterVoicemailArray {
+    'id': string;
+    'from': string;
+    'to': string;
+    'isNew': string;
+    'createdAt': number;
+    'extension': string;
+}
+
+/**
+* Each entry in a Voicemail's from list is an object with the following properties:
+*/
+export class FromObject {
+    /**
+    * The caller phone number
+    */
+    'number': string;
+    /**
+    * The name / caller ID of the caller
+    */
+    'name': string;
+    /**
+    * The city where the caller is from
+    */
+    'city': string;
+    /**
+    * The state where the caller is from
+    */
+    'state': string;
+}
+
+export class GetOauthAccessToken {
+    'scope': string;
+    'expiresAt': number;
+    'scopeDetails': Array<ScopeDetails>;
+}
+
 /**
 * Voicemail Greeting Object. See below for details. Can be set to NULL to reset greeting options.
 */
@@ -1188,6 +1321,28 @@ export class Greeting {
     * Whether to prompt the caller with the following words after the voicemail greeting has been played: \"Please leave your message after the tone. When finished, hang up or press the pound key.\" Boolean.
     */
     'enableLeaveMessagePrompt': boolean;
+}
+
+/**
+* Voicemail Greeting Object. See below for details. Can be set to NULL to reset greeting options.
+*/
+export class GreetingInput {
+    /**
+    * The greeting to play. Can be \"name\" for the name_greeting as described above, \"standard\" for the standard greeting, or \"alternate\" for an alternate greeting. See below for details.
+    */
+    'type': string;
+    /**
+    * Greeting to be played when type=\"alternate\". Output is a Greeting Summary Object. Input must be a Greeting Lookup Object.
+    */
+    'alternate': MediaSummary;
+    /**
+    * Greeting to be played when type=\"standard\". Output is a Greeting Summary Object. Input must be a Greeting Lookup Object.
+    */
+    'standard': MediaSummary;
+    /**
+    * Whether to prompt the caller with the following words after the voicemail greeting has been played: \"Please leave your message after the tone. When finished, hang up or press the pound key.\" Boolean.
+    */
+    'enableLeaveMessagePrompt': string;
 }
 
 /**
@@ -1347,6 +1502,15 @@ export class ListGroups {
     'items': Array<GroupFull>;
 }
 
+export class ListListeners {
+    'filters': FilterIdArray;
+    'sort': SortId;
+    'total': number;
+    'limit': number;
+    'offset': number;
+    'items': Array<ListenerFull>;
+}
+
 export class ListMedia {
     'filters': FilterIdNameArray;
     'sort': SortIdName;
@@ -1363,6 +1527,32 @@ export class ListMenus {
     'offset': number;
     'limit': number;
     'items': Array<MenuFull>;
+}
+
+export class ListOauthClients {
+    'filters': FilterIdArray;
+    'sort': SortId;
+    'total': number;
+    'offset': number;
+    'limit': number;
+    'items': Array<OauthClientFull>;
+}
+
+export class ListOauthClientsRedirectUris {
+    'filters': FilterIdArray;
+    'total': number;
+    'offset': number;
+    'limit': number;
+    'items': Array<OauthClientRedirectUriFull>;
+}
+
+export class ListPaymentMethods {
+    'filters': FilterIdArray;
+    'sort': SortId;
+    'total': number;
+    'offset': number;
+    'limit': number;
+    'items': Array<PaymentFull>;
 }
 
 export class ListPhoneNumbers {
@@ -1385,6 +1575,15 @@ export class ListPhoneNumbersRegions {
     'offset': number;
     'limit': number;
     'items': Array<PhoneNumbersRegionFull>;
+}
+
+export class ListPricings {
+    'filters': FilterIdArray;
+    'sort': SortId;
+    'total': number;
+    'offset': number;
+    'limit': number;
+    'items': Array<PricingFull>;
 }
 
 export class ListQueues {
@@ -1432,8 +1631,42 @@ export class ListTrunks {
     'items': Array<TrunkFull>;
 }
 
+export class ListVoicemail {
+    'filters': FilterVoicemailArray;
+    'sort': SortIdCreatedAt;
+    'total': number;
+    'offset': number;
+    'limit': number;
+    'items': Array<VoicemailFull>;
+}
+
 /**
-* The Full Recording Object includes all of the properties from the Recording Summary Object, along with the following:
+* The Listener Object is used to represent a listener. Here are the properties:
+*/
+export class ListenerFull {
+    /**
+    * Integer ID. Read-only.
+    */
+    'id': number;
+    'voipId': number;
+    /**
+    * Type of listener: callback
+    */
+    'type': string;
+    /**
+    * Type of event subscribed by the listener: call.new, call.update, call.complete, call.log, sms.in, sms.out
+    */
+    'eventType': string;
+    /**
+    * Array of Callback Object
+    */
+    'callbacks': Array<any>;
+    'updatedAt': number;
+    'createdAt': number;
+}
+
+/**
+* The Full Recording Object and the Summary Recording Object are the same.
 */
 export class MediaFull {
     /**
@@ -1492,7 +1725,7 @@ export class MenuFull {
     */
     'allowExtensionDial': boolean;
     /**
-    * Boolean. Determines whether a caller can enter an extension number to bypass the menu.
+    * Number of seconds to wait for the caller to choose a menu option. Must be between 1 and 5 seconds.
     */
     'keypressWaitTime': number;
     /**
@@ -1527,6 +1760,9 @@ export class MenuSummary {
     'name': string;
 }
 
+/**
+* The Call Notifications object configures the recipient(s) of notifications when calls are received to this extension.
+*/
 export class Notification {
     /**
     * Array of email addresses
@@ -1538,6 +1774,46 @@ export class Notification {
     'sms': string;
 }
 
+export class OauthAccessToken {
+    'accessToken': string;
+    'tokenType': string;
+    'scope': string;
+    'refreshToken': string;
+    'expiresIn': number;
+}
+
+/**
+* An OAuth Client Full Object is identical as a Summary Object.
+*/
+export class OauthClientFull {
+    /**
+    * Client ID
+    */
+    'id': number;
+    /**
+    * Name of Client
+    */
+    'clientName': string;
+}
+
+/**
+* An OAuth Client Full Object is identical as a Summary Object.
+*/
+export class OauthClientRedirectUriFull {
+    /**
+    * OAuth Client Redirect URI ID
+    */
+    'id': number;
+    /**
+    * Client details
+    */
+    'client': OauthClientFull;
+    /**
+    * Redirect URI details
+    */
+    'redirectUri': RedirectUriFull;
+}
+
 export class Option {
     /**
     * Keypad key. Must equal a single digit or the pound sign (\"#\").
@@ -1547,6 +1823,115 @@ export class Option {
     * Route which will be entered when the user presses the designated key. Output is a Route Summary Object if the route is named, otherwise the Full Route Object will be shown. Input must be a Route Lookup Object pointing to a named route.
     */
     'route': RouteSummary;
+}
+
+export class PatchPaymentParams {
+    /**
+    * primary, onfile or hidden
+    */
+    'status': string;
+}
+
+export class PatchSmsParams {
+    /**
+    * Status of SMS
+    */
+    'isNew': string;
+}
+
+export class PatchVoicemailParams {
+    /**
+    * Status of voicemail
+    */
+    'isNew': string;
+}
+
+/**
+* The Payment Method Full Object contains the same properties as the Payment Method Summary Object, along with the following:
+*/
+export class PaymentFull {
+    /**
+    * Payment Method ID
+    */
+    'id': number;
+    /**
+    * API Account ID
+    */
+    'voipId': number;
+    /**
+    * 'primary' = primary card used for billing; 'onfile' = card on file; 'hidden' = deleted card;
+    */
+    'status': string;
+    /**
+    * Name of Card
+    */
+    'nickname': string;
+    /**
+    * 'cc' for credit card
+    */
+    'type': string;
+    /**
+    * Time payment record is created
+    */
+    'createdAt': number;
+    /**
+    * Detail of contact person
+    */
+    'contact': ContactResponse;
+    /**
+    * Number of times the payment method was declined
+    */
+    'declineCount': number;
+    /**
+    * Next billing date
+    */
+    'nextChargeDate': number;
+    /**
+    * Last time the payment method was updated
+    */
+    'updatedAt': number;
+    /**
+    * Encrypted credit card token to be used for billing
+    */
+    'ccToken': string;
+    /**
+    * Credit card number partially masked with xxxxxxxx
+    */
+    'ccNumber': string;
+    /**
+    * Credit card expiration date
+    */
+    'ccExp': string;
+}
+
+/**
+* The Payment Method Summary Object is used to briefly represent a Credit Card. It consists of parameters in the table below:
+*/
+export class PaymentSummary {
+    /**
+    * Payment Method ID
+    */
+    'id': number;
+    /**
+    * API Account ID
+    */
+    'voipId': number;
+    /**
+    * 'primary' = primary card used for billing; 'onfile' = card on file; 'hidden' = deleted card;
+    */
+    'status': string;
+    /**
+    * Name of Card
+    */
+    'nickname': string;
+    /**
+    * 'cc' for credit card
+    */
+    'type': string;
+    /**
+    * Time payment record is created
+    */
+    'createdAt': number;
 }
 
 export class PhoneNumberContact {
@@ -1592,13 +1977,7 @@ export class PhoneNumberFull {
     * The Route assigned to handle incoming calls for this number, if any. Output is a Route Summary Object, or NULL if not set. Input can be a Route Lookup Object or NULL to unset.
     */
     'route': RouteSummary;
-    /**
-    * Caller ID Object, or NULL
-    */
     'callerId': CallerIdPhoneNumber;
-    /**
-    * SMS Forwarding Object, or NULL
-    */
     'smsForwarding': SmsForwarding;
     'callNotifications': CallNotifications;
 }
@@ -1649,6 +2028,47 @@ export class PingResponse {
     'remoteIp': string;
     'timestamp': number;
     'userAgent': string;
+}
+
+/**
+* The Full Pricing Object is identical to the Pricing Summary Object. The Pricing Summary Object is used to briefly represent a pricing plan. Here are the properties:
+*/
+export class PricingFull {
+    /**
+    * Integer ID of this object.
+    */
+    'id': number;
+    /**
+    * Pricing Object
+    */
+    'pricing': PricingObject;
+    /**
+    * Phone.com API Account (VoIP) ID
+    */
+    'voipId': number;
+    /**
+    * Reason this pricing plan is applied
+    */
+    'reason': string;
+    /**
+    * Name of the person / process who added this pricing plan to the subaccount
+    */
+    'who': string;
+    /**
+    * Pricing plan expiration timestamp in unix format. If pricing plan never expires, this item will not be returned
+    */
+    'expireDate': string;
+}
+
+export class PricingObject {
+    /**
+    * Pricing code / ID
+    */
+    'id': number;
+    /**
+    * Name of pricing plan
+    */
+    'name': string;
 }
 
 /**
@@ -1711,14 +2131,23 @@ export class Recipient {
     'status': string;
 }
 
+export class RedirectUriFull {
+    /**
+    * Redirect URI ID
+    */
+    'id': number;
+    /**
+    * The Uniform Resource Identifier is a string used to identify the path to be redirected
+    */
+    'uri': string;
+    /**
+    * redirect
+    */
+    'type': string;
+}
+
 export class ReplaceExtensionParams {
-    /**
-    * Voicemail object
-    */
-    'voicemail': Voicemail;
-    /**
-    * Call Notifications object
-    */
+    'voicemail': VoicemailInput;
     'callNotifications': CallNotifications;
     /**
     * Recording lookup object
@@ -1735,7 +2164,7 @@ export class ReplaceExtensionParams {
     /**
     * Include in dial-by-name directory
     */
-    'includeInDirectory': boolean;
+    'includeInDirectory': string;
     /**
     * Extension number (required)
     */
@@ -1743,7 +2172,7 @@ export class ReplaceExtensionParams {
     /**
     * Enable outgoing calls
     */
-    'enableOutboundCalls': boolean;
+    'enableOutboundCalls': string;
     /**
     * Extension type
     */
@@ -1755,7 +2184,7 @@ export class ReplaceExtensionParams {
     /**
     * Enable Call Waiting
     */
-    'enableCallWaiting': boolean;
+    'enableCallWaiting': string;
     /**
     * Caller ID
     */
@@ -1763,7 +2192,7 @@ export class ReplaceExtensionParams {
     /**
     * Local area code
     */
-    'localAreaCode': number;
+    'localAreaCode': string;
     /**
     * Route object lookup (must belong to this extension)
     */
@@ -1773,8 +2202,8 @@ export class ReplaceExtensionParams {
 export class ReplaceMenuParams {
     'name': string;
     'greeting': any;
-    'invalidKeypress': any;
-    'allowExtensionDial': boolean;
+    'keypressError': any;
+    'allowExtensionDial': string;
     'keypressWaitTime': number;
     'timeoutHandler': any;
     'options': Array<any>;
@@ -1792,26 +2221,17 @@ export class ReplacePhoneNumberParams {
     /**
     * Block incoming calls
     */
-    'blockIncoming': boolean;
+    'blockIncoming': string;
     /**
     * Block anonymous calls
     */
-    'blockAnonymous': boolean;
-    /**
-    * Caller ID object
-    */
+    'blockAnonymous': string;
     'callerId': CallerIdPhoneNumber;
-    /**
-    * SMS Forwarding Object, or NULL
-    */
     'smsForwarding': SmsForwardingParams;
     /**
     * Pool lookup object
     */
     'poolItem': any;
-    /**
-    * Call Notifications object
-    */
     'callNotifications': CallNotifications;
 }
 
@@ -1989,6 +2409,10 @@ export class ScheduleSummary {
     'name': string;
 }
 
+export class ScopeDetails {
+    'voipId': number;
+}
+
 /**
 * A SIP Authentication Properties Object. See below for details. Read-only.
 */
@@ -2048,7 +2472,7 @@ export class SmsForwardingParams {
 }
 
 /**
-* The Full SMS Object is identical to the SMS Summary Object. See above for details.
+* The Full SMS Object includes all of the properties in the SMS Summary Object.
 */
 export class SmsFull {
     /**
@@ -2079,6 +2503,10 @@ export class SmsFull {
     * Body of the SMS text
     */
     'text': string;
+    /**
+    * True when SMS is new; False when SMS has been read.
+    */
+    'isNew': boolean;
 }
 
 export class SortCallLogs {
@@ -2218,6 +2646,75 @@ export class Voicemail {
     'transcription': string;
 }
 
+/**
+* The Full Voicemail Object includes all of the properties in the Voicemail Summary Object.
+*/
+export class VoicemailFull {
+    /**
+    * Unique Voicemail ID. Read-only.
+    */
+    'id': string;
+    /**
+    * Name. Required.
+    */
+    'downloadUrl': string;
+    /**
+    * Extension where the voicemail is saved into.
+    */
+    'extension': ExtensionSummary;
+    /**
+    * The caller's information
+    */
+    'from': FromObject;
+    /**
+    * The phone number where the caller is calling
+    */
+    'to': string;
+    /**
+    * True when Voicemail is new; False when Voicemail has been listened
+    */
+    'isNew': boolean;
+    /**
+    * Date string representing the UTC time that the object was created in the Phone.com API system.
+    */
+    'createdAt': number;
+    /**
+    * Folder name where voicemail is saved
+    */
+    'folder': string;
+    /**
+    * Length of voicemail in seconds
+    */
+    'duration': number;
+}
+
+/**
+* Voicemail Object. See below for details.
+*/
+export class VoicemailInput {
+    /**
+    * Whether voicemail is enabled. Boolean.
+    */
+    'enabled': string;
+    /**
+    * Password for accessing voicemail box. Must be digits only.
+    */
+    'password': string;
+    'greeting': GreetingInput;
+    /**
+    * If notification emails are being used, this defines the format of the audio attachments. Can be \"wav\" for WAV format, \"mp3\" for MP3 format, or NULL to disable attachments.
+    */
+    'attachments': string;
+    /**
+    * Voicemail Notifications Object. See below for details. Can be set to NULL to disable notifications.
+    */
+    'notifications': Notification;
+    /**
+    * Type of voicemail transcription to use. Can be \"human\" for high-quality manual transcriptions by human operators, \"automated\" for machine-generated transcriptions, or NULL to omit trancriptions. Changing this option will affect your monthly bill. Please see our Control Panel or contact Customer Service for details.
+    */
+    'transcription': string;
+}
+
 
 export interface Authentication {
     /**
@@ -2274,7 +2771,7 @@ export enum AccountsApiApiKeys {
 }
 
 export class AccountsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -2300,12 +2797,24 @@ export class AccountsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: AccountsApiApiKeys, value: string) {
         this.authentications[AccountsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Retrieve details of an individual account
-     * This service shows the details of an individual account. See Accounts for more info on the properties.
+     * Retrieve details of an individual account. See Accounts for more info on the properties.
+     * @summary Retrieve details of an individual account
      * @param accountId Account ID
      */
     public getAccount (accountId: number) : Promise<{ response: http.ClientResponse; body: AccountFull;  }> {
@@ -2358,8 +2867,8 @@ export class AccountsApi {
         });
     }
     /**
-     * Get a list of accounts visible to the authenticated user or client
-     * This service lists the accounts accessible to the authenticated client. In most cases, there will only be one such account. See Accounts for more info on the properties.
+     * Get a list of accounts visible to the authenticated user or client. In most cases, there will only be one such account. See Accounts for more info on the properties.
+     * @summary Get a list of accounts visible to the authenticated user or client.
      * @param filters[id] ID filter
      * @param sort[id] ID sorting
      * @param limit Max results
@@ -2435,7 +2944,7 @@ export enum ApplicationsApiApiKeys {
 }
 
 export class ApplicationsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -2461,12 +2970,24 @@ export class ApplicationsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: ApplicationsApiApiKeys, value: string) {
         this.authentications[ApplicationsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Show details of an individual application
-     * 
+     * Show details of an individual Application on a given account.
+     * @summary Show details of an individual Application on a given account.
      * @param accountId Account ID
      * @param applicationId Application ID
      */
@@ -2526,8 +3047,8 @@ export class ApplicationsApi {
         });
     }
     /**
-     * Get a list of applications you have defined
-     * Get a list of an account available applications
+     * Show details of an individual Application on a given account.
+     * @summary This service lists the Applications on a given account
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -2620,7 +3141,7 @@ export enum AvailablenumbersApiApiKeys {
 }
 
 export class AvailablenumbersApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -2646,12 +3167,24 @@ export class AvailablenumbersApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: AvailablenumbersApiApiKeys, value: string) {
         this.authentications[AvailablenumbersApiApiKeys[key]].apiKey = value;
     }
     /**
      * 
-     * 
+     * @summary 
      * @param filters[phoneNumber] Phone number filter
      * @param filters[countryCode] Country Code filter
      * @param filters[npa] Area Code filter (North America only)
@@ -2782,7 +3315,7 @@ export enum CalleridsApiApiKeys {
 }
 
 export class CalleridsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -2808,12 +3341,24 @@ export class CalleridsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: CalleridsApiApiKeys, value: string) {
         this.authentications[CalleridsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Show the Caller ID options a given extension can use
-     * Get Caller ID
+     * Show the Caller ID options a given extension can use. See Intro to Caller IDs for more on the properties.
+     * @summary Show the Caller ID options a given extension can use.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param filters[number] Number filter
@@ -2913,7 +3458,7 @@ export enum CalllogsApiApiKeys {
 }
 
 export class CalllogsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -2939,12 +3484,24 @@ export class CalllogsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: CalllogsApiApiKeys, value: string) {
         this.authentications[CalllogsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Show details of an individual Call Log entry
-     * See Call Logs for more detail.
+     * Show details of an individual Call Log entry. See Call Logs for more detail.
+     * @summary Show details of an individual Call Log entry
      * @param accountId Account ID
      * @param callId Call ID
      */
@@ -3004,8 +3561,8 @@ export class CalllogsApi {
         });
     }
     /**
-     * Get a list of call details associated with your account
-     * See Call Logs for more detail.
+     * Get a list of call details associated with your account. See Call Logs for more detail.
+     * @summary Get a list of call details associated with your account
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[startTime] Call start time filter
@@ -3128,7 +3685,7 @@ export enum CallsApiApiKeys {
 }
 
 export class CallsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -3154,12 +3711,24 @@ export class CallsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: CallsApiApiKeys, value: string) {
         this.authentications[CallsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Make a phone call
-     * 
+     * Make a phone call. See Calls for more details and how to setup caller id's. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Calls API with the following definition: POST https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/calls
+     * @summary Make a phone call
      * @param accountId Account ID
      * @param data Call data
      */
@@ -3219,7 +3788,7 @@ export enum ContactsApiApiKeys {
 }
 
 export class ContactsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -3245,12 +3814,24 @@ export class ContactsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: ContactsApiApiKeys, value: string) {
         this.authentications[ContactsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Add a new address book contact for an extension
-     * For more on the input fields, see Account Contacts.
+     * Add a new address book contact for an extension. See Account Contacts for more info on the fields in each item.
+     * @summary Add a new address book contact for an extension.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param data Contact data
@@ -3312,13 +3893,13 @@ export class ContactsApi {
         });
     }
     /**
-     * 
-     * 
+     * Delete a contact from the address book. See Account Contacts for more info on the fields in each item.
+     * @summary Delete a contact from the address book.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param contactId Contact ID
      */
-    public deleteAccountExtensionContact (accountId: number, extensionId: number, contactId: number) : Promise<{ response: http.ClientResponse; body: DeleteContact;  }> {
+    public deleteAccountExtensionContact (accountId: number, extensionId: number, contactId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/extensions/{extension_id}/contacts/{contact_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
             .replace('{' + 'extension_id' + '}', String(extensionId))
@@ -3365,7 +3946,7 @@ export class ContactsApi {
                 requestOptions.form = formParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: DeleteContact;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
             request(requestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -3380,8 +3961,8 @@ export class ContactsApi {
         });
     }
     /**
-     * Retrieve the details of an address book contact
-     * For more info on the fields shown, see Account Contacts.
+     * Retrieve the details of an address book contact. See Account Contacts for more info on the fields in each item.
+     * @summary Retrieve the details of an address book contact.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param contactId Contact ID
@@ -3448,8 +4029,8 @@ export class ContactsApi {
         });
     }
     /**
-     * Show a list of address book contacts
-     * See Account Contacts for more info on the fields in each item.
+     * Show the Caller ID options a given extension can use. See Intro to Caller IDs for more on the properties.
+     * @summary Show the Caller ID options a given extension can use.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param filters[id] ID filter
@@ -3549,8 +4130,8 @@ export class ContactsApi {
         });
     }
     /**
-     * 
-     * For more on the input fields, see Account Contacts.
+     * Update the info of a contact in the address book. See Account Contacts for more info on the fields in each item.
+     * @summary Update the info of a contact in the address book.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param contactId Contact ID
@@ -3624,7 +4205,7 @@ export enum DefaultApiApiKeys {
 }
 
 export class DefaultApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -3650,12 +4231,24 @@ export class DefaultApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: DefaultApiApiKeys, value: string) {
         this.authentications[DefaultApiApiKeys[key]].apiKey = value;
     }
     /**
      * The default API command
-     * The default API command
+     * @summary The default API command
      */
     public ping () : Promise<{ response: http.ClientResponse; body: PingResponse;  }> {
         const localVarPath = this.basePath + '/ping';
@@ -3706,7 +4299,7 @@ export enum DevicesApiApiKeys {
 }
 
 export class DevicesApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -3732,12 +4325,24 @@ export class DevicesApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: DevicesApiApiKeys, value: string) {
         this.authentications[DevicesApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Register a generic VoIP device
-     * 
+     * Register a generic VoIP device. See Devices for more detail.
+     * @summary Register a generic VoIP device.
      * @param accountId Account ID
      * @param data Device data
      */
@@ -3792,8 +4397,69 @@ export class DevicesApi {
         });
     }
     /**
-     * Show details of an individual VoIP device
-     * 
+     * Delete a VoIP device. See Devices for more detail.
+     * @summary Delete a VoIP device.
+     * @param accountId Account ID
+     * @param deviceId Device ID
+     */
+    public deleteAccountDevice (accountId: number, deviceId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/devices/{device_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'device_id' + '}', String(deviceId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling deleteAccountDevice.');
+        }
+
+        // verify required parameter 'deviceId' is not null or undefined
+        if (deviceId === null || deviceId === undefined) {
+            throw new Error('Required parameter deviceId was null or undefined when calling deleteAccountDevice.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'DELETE',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Show details of an individual VoIP device. See Devices for more detail.
+     * @summary Show details of an individual VoIP device.
      * @param accountId Account ID
      * @param deviceId Device ID
      */
@@ -3853,8 +4519,8 @@ export class DevicesApi {
         });
     }
     /**
-     * Get a list of VoIP devices associated with your account
-     * 
+     * Get a list of VoIP devices associated with your account. See Devices for more detail.
+     * @summary Get a list of VoIP devices associated with your account.
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -3942,8 +4608,8 @@ export class DevicesApi {
         });
     }
     /**
-     * Update the settings for an individual VoIP device
-     * 
+     * Update the details of an individual VoIP device. See Devices for more detail.
+     * @summary Update the details of an individual VoIP device.
      * @param accountId Account ID
      * @param deviceId Device ID
      * @param data Device data
@@ -4010,7 +4676,7 @@ export enum ExpressservicecodesApiApiKeys {
 }
 
 export class ExpressservicecodesApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -4036,12 +4702,24 @@ export class ExpressservicecodesApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: ExpressservicecodesApiApiKeys, value: string) {
         this.authentications[ExpressservicecodesApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Show details of an account Express Service Code
      * This service shows the details of an Account Express Service Code.
+     * @summary Show details of an account Express Service Code
      * @param accountId Account ID
      * @param codeId Device ID
      */
@@ -4101,8 +4779,8 @@ export class ExpressservicecodesApi {
         });
     }
     /**
-     * Get the Express Service Code associated with your account in list format
-     * See Express Service Codes for more detail.
+     * Get the Express Service Code associated with your account in list format. See Express Service Codes for more detail.
+     * @summary Get the Express Service Code associated with your account in list format.
      * @param accountId Account ID
      * @param filters[id] ID filter
      */
@@ -4165,7 +4843,7 @@ export enum ExtensionsApiApiKeys {
 }
 
 export class ExtensionsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -4191,12 +4869,24 @@ export class ExtensionsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: ExtensionsApiApiKeys, value: string) {
         this.authentications[ExtensionsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Create an individual extension
-     * This service shows how to create a virtual extension.
+     * Create an individual extension. See extension for more details.
+     * @summary Create an individual extension.
      * @param accountId Account ID
      * @param data Account Extensions Data
      */
@@ -4251,8 +4941,8 @@ export class ExtensionsApi {
         });
     }
     /**
-     * Show details of an individual extension
-     * This service shows the details of an individual Extension.
+     * Show details of an individual extension. See extension for more details.
+     * @summary Show details of an individual extension.
      * @param accountId Account ID
      * @param extensionId Extension ID
      */
@@ -4312,8 +5002,8 @@ export class ExtensionsApi {
         });
     }
     /**
-     * Get a list of extensions visible to the authenticated user or client
-     * This service lists the visible extensions on a given account.
+     * Get a list of extensions visible to the authenticated user or client. See extension for more details.
+     * @summary Get a list of extensions visible to the authenticated user or client.
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[extension] Extension filter
@@ -4411,8 +5101,8 @@ export class ExtensionsApi {
         });
     }
     /**
-     * Replace an individual extension
-     * This service shows how to update an individual extension.
+     * Replace an individual extension. See extension for more details.
+     * @summary Replace an individual extension.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param data Account Extensions Data
@@ -4479,7 +5169,7 @@ export enum GroupsApiApiKeys {
 }
 
 export class GroupsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -4505,15 +5195,27 @@ export class GroupsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: GroupsApiApiKeys, value: string) {
         this.authentications[GroupsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * 
-     * See Account Contact Groups for more info on the properties.
+     * Add a new contact group to an account extension. See Account Contact Groups for details on the properties.
+     * @summary Add a new contact group to an account extension.
      * @param accountId Account ID
      * @param extensionId Extension ID
-     * @param data Group name
+     * @param data Group data
      */
     public createAccountExtensionContactGroup (accountId: number, extensionId: number, data: CreateGroupParams) : Promise<{ response: http.ClientResponse; body: GroupFull;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/extensions/{extension_id}/contact-groups'
@@ -4577,13 +5279,13 @@ export class GroupsApi {
         });
     }
     /**
-     * Delete an addressbook group
-     * 
+     * Delete a contact group from the address book. See Account Contact Groups for details on the properties.
+     * @summary Delete a contact group from the address book.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param groupId Group ID
      */
-    public deleteAccountExtensionContactGroup (accountId: number, extensionId: number, groupId: number) : Promise<{ response: http.ClientResponse; body: DeleteGroup;  }> {
+    public deleteAccountExtensionContactGroup (accountId: number, extensionId: number, groupId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/extensions/{extension_id}/contact-groups/{group_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
             .replace('{' + 'extension_id' + '}', String(extensionId))
@@ -4630,7 +5332,7 @@ export class GroupsApi {
                 requestOptions.form = formParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: DeleteGroup;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
             request(requestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -4645,8 +5347,8 @@ export class GroupsApi {
         });
     }
     /**
-     * 
-     * See Account Contact Groups for more info on the properties.
+     * Retrieve the information of a contact group. See Account Contact Groups for details on the properties.
+     * @summary Retrieve the information of a contact group.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param groupId Group ID
@@ -4713,8 +5415,8 @@ export class GroupsApi {
         });
     }
     /**
-     * Show a list of contact groups belonging to an extension
-     * See Account Contact Groups for details on the properties.
+     * Show a list of contact groups belonging to an extension. See Account Contact Groups for details on the properties.
+     * @summary Show a list of contact groups belonging to an extension.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param filters[id] ID filter
@@ -4809,12 +5511,12 @@ export class GroupsApi {
         });
     }
     /**
-     * 
-     * See Account Contact Groups for more info on the properties.
+     * Update the information of a contact group. See Account Contact Groups for details on the properties.
+     * @summary Update the information of a contact group.
      * @param accountId Account ID
      * @param extensionId Extension ID
      * @param groupId Group ID
-     * @param data Group name
+     * @param data Group data
      */
     public replaceAccountExtensionContactGroup (accountId: number, extensionId: number, groupId: number, data: CreateGroupParams) : Promise<{ response: http.ClientResponse; body: GroupFull;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/extensions/{extension_id}/contact-groups/{group_id}'
@@ -4884,12 +5586,12 @@ export class GroupsApi {
         });
     }
 }
-export enum MediaApiApiKeys {
+export enum ListenersApiApiKeys {
     apiKey,
 }
 
-export class MediaApi {
-    protected basePath = defaultBasePath;
+export class ListenersApi {
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -4915,12 +5617,391 @@ export class MediaApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: ListenersApiApiKeys, value: string) {
+        this.authentications[ListenersApiApiKeys[key]].apiKey = value;
+    }
+    /**
+     * Add a listener object to your account that can be used to subscribe an event. See Account Listeners for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level Post Listener API with the following definition: POST https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/listeners
+     * @summary Add a listener object to your account that can be used to subscribe an event.
+     * @param accountId Account ID
+     * @param data Account Listeners Data
+     */
+    public createAccountListener (accountId: number, data?: CreateListenerParams) : Promise<{ response: http.ClientResponse; body: ListenerFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/listeners'
+            .replace('{' + 'account_id' + '}', String(accountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling createAccountListener.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'POST',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListenerFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Delete an individual event listener. See Account Listeners for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level Delete Listener API with the following definition: DELETE https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/listeners/:listener_id
+     * @summary Delete an individual event listener.
+     * @param accountId Account ID
+     * @param listenerId Listener ID
+     */
+    public deleteAccountListener (accountId: number, listenerId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/listeners/{listener_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'listener_id' + '}', String(listenerId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling deleteAccountListener.');
+        }
+
+        // verify required parameter 'listenerId' is not null or undefined
+        if (listenerId === null || listenerId === undefined) {
+            throw new Error('Required parameter listenerId was null or undefined when calling deleteAccountListener.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'DELETE',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Show details of an individual event listener. See Account Listeners for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level Get Listener API with the following definition: GET https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/listeners/:listener_id
+     * @summary Show details of an individual listener.
+     * @param accountId Account ID
+     * @param listenerId Listener ID
+     */
+    public getAccountListener (accountId: number, listenerId: number) : Promise<{ response: http.ClientResponse; body: ListenerFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/listeners/{listener_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'listener_id' + '}', String(listenerId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling getAccountListener.');
+        }
+
+        // verify required parameter 'listenerId' is not null or undefined
+        if (listenerId === null || listenerId === undefined) {
+            throw new Error('Required parameter listenerId was null or undefined when calling getAccountListener.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListenerFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get a list of listeners for an account. See Account Listeners for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level List Listeners API with the following definition: GET https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/listeners
+     * @summary Get a list of listeners for an account.
+     * @param accountId Account ID
+     * @param filters[id] ID filter
+     * @param sort[id] ID sorting
+     * @param limit Max results
+     * @param offset Results to skip
+     * @param fields Field set
+     */
+    public listAccountListeners (accountId: number, filters[id]?: Array<string>, sort[id]?: string, limit?: number, offset?: number, fields?: string) : Promise<{ response: http.ClientResponse; body: ListListeners;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/listeners'
+            .replace('{' + 'account_id' + '}', String(accountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling listAccountListeners.');
+        }
+
+        if (filters[id] !== undefined) {
+            queryParameters['filters[id]'] = filters[id];
+        }
+
+        if (sort[id] !== undefined) {
+            queryParameters['sort[id]'] = sort[id];
+        }
+
+        if (limit !== undefined) {
+            queryParameters['limit'] = limit;
+        }
+
+        if (offset !== undefined) {
+            queryParameters['offset'] = offset;
+        }
+
+        if (fields !== undefined) {
+            queryParameters['fields'] = fields;
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListListeners;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Update the settings of an individual event listener. See Event Listeners for more detail. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level Replace Listener API with the following definition: PUT https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/listeners/:listener_id
+     * @summary Update the settings of an individual event listener.
+     * @param accountId Account ID
+     * @param listenerId Listener ID
+     * @param data Account Listeners Data
+     */
+    public replaceAccountListener (accountId: number, listenerId: number, data?: CreateListenerParams) : Promise<{ response: http.ClientResponse; body: ListenerFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/listeners/{listener_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'listener_id' + '}', String(listenerId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling replaceAccountListener.');
+        }
+
+        // verify required parameter 'listenerId' is not null or undefined
+        if (listenerId === null || listenerId === undefined) {
+            throw new Error('Required parameter listenerId was null or undefined when calling replaceAccountListener.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'PUT',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListenerFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum MediaApiApiKeys {
+    apiKey,
+}
+
+export class MediaApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'apiKey': new ApiKeyAuth('header', 'Authorization'),
+    }
+
+    constructor(basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: MediaApiApiKeys, value: string) {
         this.authentications[MediaApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Add a media object to your account that can be used as a greeting or hold music. Users may create a media by using the built-in Text-to-speech (TTS) facility or upload a file of their choice. (Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB)
      * See Account Media for more info on the properties.
+     * @summary Add a media object to your account that can be used as a greeting or hold music. Users may create a media by using the built-in Text-to-speech (TTS) facility or upload a file of their choice. (Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB)
      * @param accountId Account ID
      * @param json Media extra parameters
      * @param file Media file
@@ -4984,8 +6065,8 @@ export class MediaApi {
         });
     }
     /**
-     * Add a media object to your account that can be used as a greeting or hold music. Users may create a media by using the built-in Text-to-speech (TTS) facility or upload a file of their choice. (Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB)
      * See Account Media for more info on the properties.
+     * @summary Add a media object to your account that can be used as a greeting or hold music. Users may create a media by using the built-in Text-to-speech (TTS) facility or upload a file of their choice. (Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB)
      * @param accountId Account ID
      * @param data Media data
      */
@@ -5040,12 +6121,12 @@ export class MediaApi {
         });
     }
     /**
-     * Delete an individual media record
      * See Account Media for more info on the properties.
+     * @summary Delete an individual media record
      * @param accountId Account ID
      * @param mediaId Media ID
      */
-    public deleteAccountMedia (accountId: number, mediaId: number) : Promise<{ response: http.ClientResponse; body: DeleteMedia;  }> {
+    public deleteAccountMedia (accountId: number, mediaId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/media/{media_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
             .replace('{' + 'media_id' + '}', String(mediaId));
@@ -5086,7 +6167,7 @@ export class MediaApi {
                 requestOptions.form = formParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: DeleteMedia;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
             request(requestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -5101,8 +6182,8 @@ export class MediaApi {
         });
     }
     /**
-     * Show details of an individual media recording (Greeting or Hold Music)
      * Get individual media recording
+     * @summary Show details of an individual media recording (Greeting or Hold Music)
      * @param accountId Account ID
      * @param mediaId Media ID
      */
@@ -5162,8 +6243,8 @@ export class MediaApi {
         });
     }
     /**
-     * Get a list of media recordings for an account
-     * See Account Menus for more info on the properties.
+     * Get a list of media recordings for an account. See Account Media for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level List Media API with the following definition: GET https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/media
+     * @summary Get a list of media recordings for an account.
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -5251,8 +6332,8 @@ export class MediaApi {
         });
     }
     /**
-     * Update a media object to your account. Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB.
      * See Account Media for more info on the properties.
+     * @summary Update a media object to your account. Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB.
      * @param accountId Account ID
      * @param mediaId Media ID
      * @param json Media extra parameters
@@ -5323,8 +6404,8 @@ export class MediaApi {
         });
     }
     /**
-     * Update a media object to your account. Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB.
-     * See Account Media for more info on the properties.
+     * Update a media object to your account. Note: The maximum size for media files or JSON objects included with a POST or PUT request is 10 MB. See Account Media for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level Replace Media API with the following definition: PUT https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/media/:media_id
+     * @summary Update a media object to your account.
      * @param accountId Account ID
      * @param mediaId Media ID
      * @param data Media data
@@ -5391,7 +6472,7 @@ export enum MenusApiApiKeys {
 }
 
 export class MenusApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -5417,12 +6498,24 @@ export class MenusApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: MenusApiApiKeys, value: string) {
         this.authentications[MenusApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Create an individual menu
-     * This service creates an individual menu. See Account Menus for more info on the properties.
+     * Create an individual menu. See Account Menus for more info on the properties.
+     * @summary Create an individual menu.
      * @param accountId Account ID
      * @param data Menu data
      */
@@ -5477,12 +6570,12 @@ export class MenusApi {
         });
     }
     /**
-     * Delete an individual menu
-     * See Account Menus for more info on the properties.
+     * Delete an individual menu. See Account Menus for more info on the properties.
+     * @summary Delete an individual menu.
      * @param accountId Account ID
      * @param menuId Menu ID
      */
-    public deleteAccountMenu (accountId: number, menuId: number) : Promise<{ response: http.ClientResponse; body: DeleteMenu;  }> {
+    public deleteAccountMenu (accountId: number, menuId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/menus/{menu_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
             .replace('{' + 'menu_id' + '}', String(menuId));
@@ -5523,7 +6616,7 @@ export class MenusApi {
                 requestOptions.form = formParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: DeleteMenu;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
             request(requestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -5538,8 +6631,8 @@ export class MenusApi {
         });
     }
     /**
-     * Show details of an individual menu
-     * This service shows the details of an individual Menu.
+     * Show details of an individual menu. See Account Menus for more info on the properties.
+     * @summary Show details of an individual menu.
      * @param accountId Account ID
      * @param menuId Menu ID
      */
@@ -5599,8 +6692,8 @@ export class MenusApi {
         });
     }
     /**
-     * Get a list of menus for an account
-     * See Account Menus for more info on the properties.
+     * Get a list of menus for an account. See Account Menus for more info on the properties.
+     * @summary Get a list of menus for an account.
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -5688,8 +6781,8 @@ export class MenusApi {
         });
     }
     /**
-     * Replace an individual menu
-     * See Account Menus for more info on the properties.
+     * Replace an individual menu. See Account Menus for more info on the properties.
+     * @summary Replace an individual menu.
      * @param accountId Account ID
      * @param menuId Menu ID
      * @param data Menu data
@@ -5756,7 +6849,7 @@ export enum NumberregionsApiApiKeys {
 }
 
 export class NumberregionsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -5782,12 +6875,24 @@ export class NumberregionsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: NumberregionsApiApiKeys, value: string) {
         this.authentications[NumberregionsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * 
      * This service lists the quantities of available phone numbers by region.
+     * @summary 
      * @param filters[countryCode] Country Code filter
      * @param filters[npa] Area Code filter (North America only)
      * @param filters[nxx] 2nd set of 3 digits filter (North America only)
@@ -5923,12 +7028,12 @@ export class NumberregionsApi {
         });
     }
 }
-export enum PhonenumbersApiApiKeys {
+export enum OauthApiApiKeys {
     apiKey,
 }
 
-export class PhonenumbersApi {
-    protected basePath = defaultBasePath;
+export class OauthApi {
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -5954,12 +7059,1206 @@ export class PhonenumbersApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: OauthApiApiKeys, value: string) {
+        this.authentications[OauthApiApiKeys[key]].apiKey = value;
+    }
+    /**
+     * To create an access token via the /oauth/access-token API, an API user may choose any one of the grant types it supports: Authorization Code Grant, Client Credential Grant, Password Credential Grant or Refresh Token Grant. For Authorization Code Grant, the input parameter 'code' is generated via the Create Authorization API. NOTE: The Create Access Token API now accepts requests in query string format as well as JSON body format. See OAuth for more details on how to obtain client id and client secret to create an access token at real time.
+     * @summary To create an access token via the /oauth/access-token API, an API user may choose any one of the grant types it supports: Authorization Code Grant, Client Credential Grant, Password Credential Grant or Refresh Token Grant.
+     * @param data Oauth data
+     */
+    public createOauthAccessToken (data?: CreateOauthParams) : Promise<{ response: http.ClientResponse; body: OauthAccessToken;  }> {
+        const localVarPath = this.basePath + '/oauth/access-token';
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'POST',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: OauthAccessToken;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Create Authorization Code or Access Token. The /oauth/authorization API supports Authorization Grant and Implicit Grant. In Authorization Grant, this API returns a code (response_type=code) for clients implemented in a browser using a scripting language such as JavaScript. Users may then use the code via the Create Access Token API to create an access token. The Implicit Grant is a simplified authorization code flow. In the implicit flow, instead of issuing the client an authorization code, the client is issued an access token (response_type=token) directly. See OAuth for more details on how to obtain client id and client secret to create authorization code access token at real time.
+     * @summary Create Authorization Code or Access Token.
+     * @param clientId Client ID
+     * @param responseType &#39;token&#39; for Implicit Grant; &#39;code&#39; for Authorization Code Grant
+     * @param scope account-owner, extension-user and/or methods:ALL, separated by space (%20)
+     * @param redirectUri The URL where the response data of this API is redirected to
+     */
+    public createOauthAuthorization (clientId: string, responseType: string, scope: string, redirectUri: string) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+        const localVarPath = this.basePath + '/oauth/authorization';
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'clientId' is not null or undefined
+        if (clientId === null || clientId === undefined) {
+            throw new Error('Required parameter clientId was null or undefined when calling createOauthAuthorization.');
+        }
+
+        // verify required parameter 'responseType' is not null or undefined
+        if (responseType === null || responseType === undefined) {
+            throw new Error('Required parameter responseType was null or undefined when calling createOauthAuthorization.');
+        }
+
+        // verify required parameter 'scope' is not null or undefined
+        if (scope === null || scope === undefined) {
+            throw new Error('Required parameter scope was null or undefined when calling createOauthAuthorization.');
+        }
+
+        // verify required parameter 'redirectUri' is not null or undefined
+        if (redirectUri === null || redirectUri === undefined) {
+            throw new Error('Required parameter redirectUri was null or undefined when calling createOauthAuthorization.');
+        }
+
+        if (clientId !== undefined) {
+            queryParameters['client_id'] = clientId;
+        }
+
+        if (responseType !== undefined) {
+            queryParameters['response_type'] = responseType;
+        }
+
+        if (scope !== undefined) {
+            queryParameters['scope'] = scope;
+        }
+
+        if (redirectUri !== undefined) {
+            queryParameters['redirect_uri'] = redirectUri;
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Retrieve details of an access token, such as scope, expiration and extension ID. Voip ID will be returned as well if scope contains account-owner scope.
+     * @summary Retrieve details of an access token, such as scope, expiration and extension ID.
+     */
+    public getOauthAccessToken () : Promise<{ response: http.ClientResponse; body: GetOauthAccessToken;  }> {
+        const localVarPath = this.basePath + '/oauth/access-token';
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: GetOauthAccessToken;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum OauthclientsApiApiKeys {
+    apiKey,
+}
+
+export class OauthclientsApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'apiKey': new ApiKeyAuth('header', 'Authorization'),
+    }
+
+    constructor(basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: OauthclientsApiApiKeys, value: string) {
+        this.authentications[OauthclientsApiApiKeys[key]].apiKey = value;
+    }
+    /**
+     * Delete an individual OAuth client. See Account OAuth Clients for more info on the properties.
+     * @summary Delete an individual OAuth client.
+     * @param accountId Account ID
+     * @param clientId Client ID
+     */
+    public deleteAccountOauthClient (accountId: number, clientId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/oauth/clients/{client_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'client_id' + '}', String(clientId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling deleteAccountOauthClient.');
+        }
+
+        // verify required parameter 'clientId' is not null or undefined
+        if (clientId === null || clientId === undefined) {
+            throw new Error('Required parameter clientId was null or undefined when calling deleteAccountOauthClient.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'DELETE',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Show details of an individual OAuth client. See Account OAuth Clients for more info on the properties.
+     * @summary Show details of an individual OAuth client.
+     * @param accountId Account ID
+     * @param clientId Client ID
+     */
+    public getAccountOauthClient (accountId: number, clientId: number) : Promise<{ response: http.ClientResponse; body: OauthClientFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/oauth/clients/{client_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'client_id' + '}', String(clientId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling getAccountOauthClient.');
+        }
+
+        // verify required parameter 'clientId' is not null or undefined
+        if (clientId === null || clientId === undefined) {
+            throw new Error('Required parameter clientId was null or undefined when calling getAccountOauthClient.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: OauthClientFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get a list of OAuth clients for an account. See Account OAuth Clients for more info on the properties.
+     * @summary Get a list of OAuth clients for an account.
+     * @param accountId Account ID
+     * @param filters[id] ID filter
+     * @param sort[id] ID sorting
+     * @param limit Max results
+     * @param offset Results to skip
+     * @param fields Field set
+     */
+    public listAccountOauthClients (accountId: number, filters[id]?: Array<string>, sort[id]?: string, limit?: number, offset?: number, fields?: string) : Promise<{ response: http.ClientResponse; body: ListOauthClients;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/oauth/clients'
+            .replace('{' + 'account_id' + '}', String(accountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling listAccountOauthClients.');
+        }
+
+        if (filters[id] !== undefined) {
+            queryParameters['filters[id]'] = filters[id];
+        }
+
+        if (sort[id] !== undefined) {
+            queryParameters['sort[id]'] = sort[id];
+        }
+
+        if (limit !== undefined) {
+            queryParameters['limit'] = limit;
+        }
+
+        if (offset !== undefined) {
+            queryParameters['offset'] = offset;
+        }
+
+        if (fields !== undefined) {
+            queryParameters['fields'] = fields;
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListOauthClients;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum OauthclientsredirecturisApiApiKeys {
+    apiKey,
+}
+
+export class OauthclientsredirecturisApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'apiKey': new ApiKeyAuth('header', 'Authorization'),
+    }
+
+    constructor(basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: OauthclientsredirecturisApiApiKeys, value: string) {
+        this.authentications[OauthclientsredirecturisApiApiKeys[key]].apiKey = value;
+    }
+    /**
+     * Create an OAuth Client Redirect URI record.
+     * @summary Create an OAuth Client Redirect URI record.
+     * @param accountId Account ID
+     * @param clientId Client ID
+     * @param data Redirect Uri data
+     */
+    public createAccountOauthClientsRedirectUri (accountId: number, clientId: number, data?: CreateRedirectUriParams) : Promise<{ response: http.ClientResponse; body: OauthClientRedirectUriFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/oauth/clients/{client_id}/redirect-uris'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'client_id' + '}', String(clientId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling createAccountOauthClientsRedirectUri.');
+        }
+
+        // verify required parameter 'clientId' is not null or undefined
+        if (clientId === null || clientId === undefined) {
+            throw new Error('Required parameter clientId was null or undefined when calling createAccountOauthClientsRedirectUri.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'POST',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: OauthClientRedirectUriFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Delete an OAuth Client Redirect URI record.
+     * @summary Delete an OAuth Client Redirect URI record.
+     * @param accountId Account ID
+     * @param clientId Client ID
+     * @param uriId Redirect URI ID
+     */
+    public deleteAccountOauthClientsRedirectUri (accountId: number, clientId: number, uriId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/oauth/clients/{client_id}/redirect-uris/{uri_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'client_id' + '}', String(clientId))
+            .replace('{' + 'uri_id' + '}', String(uriId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling deleteAccountOauthClientsRedirectUri.');
+        }
+
+        // verify required parameter 'clientId' is not null or undefined
+        if (clientId === null || clientId === undefined) {
+            throw new Error('Required parameter clientId was null or undefined when calling deleteAccountOauthClientsRedirectUri.');
+        }
+
+        // verify required parameter 'uriId' is not null or undefined
+        if (uriId === null || uriId === undefined) {
+            throw new Error('Required parameter uriId was null or undefined when calling deleteAccountOauthClientsRedirectUri.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'DELETE',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get details of an OAuth Client Redirect URI record.
+     * @summary Get details of an OAuth Client Redirect URI record.
+     * @param accountId Account ID
+     * @param clientId Client ID
+     * @param uriId Redirect URI ID
+     */
+    public getAccountOauthClientsRedirectUri (accountId: number, clientId: number, uriId: number) : Promise<{ response: http.ClientResponse; body: OauthClientRedirectUriFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/oauth/clients/{client_id}/redirect-uris/{uri_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'client_id' + '}', String(clientId))
+            .replace('{' + 'uri_id' + '}', String(uriId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling getAccountOauthClientsRedirectUri.');
+        }
+
+        // verify required parameter 'clientId' is not null or undefined
+        if (clientId === null || clientId === undefined) {
+            throw new Error('Required parameter clientId was null or undefined when calling getAccountOauthClientsRedirectUri.');
+        }
+
+        // verify required parameter 'uriId' is not null or undefined
+        if (uriId === null || uriId === undefined) {
+            throw new Error('Required parameter uriId was null or undefined when calling getAccountOauthClientsRedirectUri.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: OauthClientRedirectUriFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get a list of OAuth Client Redirect URIs for an account.
+     * @summary Get a list of OAuth Client Redirect URIs for an account.
+     * @param accountId Account ID
+     * @param clientId Client ID
+     * @param filters[id] ID filter
+     * @param sort[id] ID sorting
+     * @param limit Max results
+     * @param offset Results to skip
+     * @param fields Field set
+     */
+    public listAccountOauthClientsRedirectUris (accountId: number, clientId: number, filters[id]?: Array<string>, sort[id]?: string, limit?: number, offset?: number, fields?: string) : Promise<{ response: http.ClientResponse; body: ListOauthClientsRedirectUris;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/oauth/clients/{client_id}/redirect-uris'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'client_id' + '}', String(clientId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling listAccountOauthClientsRedirectUris.');
+        }
+
+        // verify required parameter 'clientId' is not null or undefined
+        if (clientId === null || clientId === undefined) {
+            throw new Error('Required parameter clientId was null or undefined when calling listAccountOauthClientsRedirectUris.');
+        }
+
+        if (filters[id] !== undefined) {
+            queryParameters['filters[id]'] = filters[id];
+        }
+
+        if (sort[id] !== undefined) {
+            queryParameters['sort[id]'] = sort[id];
+        }
+
+        if (limit !== undefined) {
+            queryParameters['limit'] = limit;
+        }
+
+        if (offset !== undefined) {
+            queryParameters['offset'] = offset;
+        }
+
+        if (fields !== undefined) {
+            queryParameters['fields'] = fields;
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListOauthClientsRedirectUris;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum PaymentmethodsApiApiKeys {
+    apiKey,
+}
+
+export class PaymentmethodsApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'apiKey': new ApiKeyAuth('header', 'Authorization'),
+    }
+
+    constructor(basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: PaymentmethodsApiApiKeys, value: string) {
+        this.authentications[PaymentmethodsApiApiKeys[key]].apiKey = value;
+    }
+    /**
+     * Create an individual payment method. See Account Payment Methods for more info on the properties.
+     * @summary Create an individual payment method.
+     * @param accountId Account ID
+     * @param data Payment data
+     */
+    public createAccountPaymentMethod (accountId: number, data: CreatePaymentParams) : Promise<{ response: http.ClientResponse; body: PaymentFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/payment-methods'
+            .replace('{' + 'account_id' + '}', String(accountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling createAccountPaymentMethod.');
+        }
+
+        // verify required parameter 'data' is not null or undefined
+        if (data === null || data === undefined) {
+            throw new Error('Required parameter data was null or undefined when calling createAccountPaymentMethod.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'POST',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: PaymentFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Delete an individual payment method. See Account Payment Methods for more info on the properties.
+     * @summary Delete an individual payment method.
+     * @param accountId Account ID
+     * @param pmId Payment Method ID
+     */
+    public deleteAccountPaymentMethod (accountId: number, pmId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/payment-methods/{pm_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'pm_id' + '}', String(pmId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling deleteAccountPaymentMethod.');
+        }
+
+        // verify required parameter 'pmId' is not null or undefined
+        if (pmId === null || pmId === undefined) {
+            throw new Error('Required parameter pmId was null or undefined when calling deleteAccountPaymentMethod.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'DELETE',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Show details of an individual payment method. See Account Payment Methods for more info on the properties.
+     * @summary Show details of an individual payment method.
+     * @param accountId Account ID
+     * @param pmId Payment Method ID
+     */
+    public getAccountPaymentMethod (accountId: number, pmId: number) : Promise<{ response: http.ClientResponse; body: PaymentFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/payment-methods/{pm_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'pm_id' + '}', String(pmId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling getAccountPaymentMethod.');
+        }
+
+        // verify required parameter 'pmId' is not null or undefined
+        if (pmId === null || pmId === undefined) {
+            throw new Error('Required parameter pmId was null or undefined when calling getAccountPaymentMethod.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: PaymentFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get a list of payment methods for an account. See Account Payment Methods for more info on the properties.
+     * @summary Get a list of payment methods for an account.
+     * @param accountId Account ID
+     * @param filters[id] ID filter
+     * @param sort[id] ID sorting
+     * @param limit Max results
+     * @param offset Results to skip
+     * @param fields Field set
+     */
+    public listAccountPaymentMethods (accountId: number, filters[id]?: Array<string>, sort[id]?: string, limit?: number, offset?: number, fields?: string) : Promise<{ response: http.ClientResponse; body: ListPaymentMethods;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/payment-methods'
+            .replace('{' + 'account_id' + '}', String(accountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling listAccountPaymentMethods.');
+        }
+
+        if (filters[id] !== undefined) {
+            queryParameters['filters[id]'] = filters[id];
+        }
+
+        if (sort[id] !== undefined) {
+            queryParameters['sort[id]'] = sort[id];
+        }
+
+        if (limit !== undefined) {
+            queryParameters['limit'] = limit;
+        }
+
+        if (offset !== undefined) {
+            queryParameters['offset'] = offset;
+        }
+
+        if (fields !== undefined) {
+            queryParameters['fields'] = fields;
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListPaymentMethods;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Replace the status of an individual payment method. See Account Payment Methods for more info on the properties.
+     * @summary Replace the status of an individual payment method.
+     * @param accountId Account ID
+     * @param pmId Payment Method ID
+     * @param data Payment data
+     */
+    public patchAccountPaymentMethod (accountId: number, pmId: number, data?: PatchPaymentParams) : Promise<{ response: http.ClientResponse; body: PaymentFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/payment-methods/{pm_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'pm_id' + '}', String(pmId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling patchAccountPaymentMethod.');
+        }
+
+        // verify required parameter 'pmId' is not null or undefined
+        if (pmId === null || pmId === undefined) {
+            throw new Error('Required parameter pmId was null or undefined when calling patchAccountPaymentMethod.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'PATCH',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: PaymentFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum PhonenumbersApiApiKeys {
+    apiKey,
+}
+
+export class PhonenumbersApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'apiKey': new ApiKeyAuth('header', 'Authorization'),
+    }
+
+    constructor(basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: PhonenumbersApiApiKeys, value: string) {
         this.authentications[PhonenumbersApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Add a phone number to an account
-     * See Intro to Account Phone Numbers for more info on the properties to use.
+     * Add a phone number to an account. See Account Phone Numbers for more info on the properties.
+     * @summary Add a phone number to an account.
      * @param accountId Account ID
      * @param data Phone Number data
      */
@@ -6014,8 +8313,8 @@ export class PhonenumbersApi {
         });
     }
     /**
-     * Show details of an individual phone number
-     * See Intro to Account Phone Numbers for more info on the properties.
+     * Show details of an individual phone number. See Account Phone Numbers for more info on the properties.
+     * @summary Show details of an individual phone number.
      * @param accountId Account ID
      * @param numberId Number ID
      */
@@ -6075,8 +8374,8 @@ export class PhonenumbersApi {
         });
     }
     /**
-     * Get a list of phone numbers registered to an account
-     * See Intro to Account Phone Numbers for more info on the properties.
+     * Get a list of phone numbers registered to an account. See Account Phone Numbers for more info on the properties.
+     * @summary Get a list of phone numbers registered to an account.
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -6174,8 +8473,8 @@ export class PhonenumbersApi {
         });
     }
     /**
-     * Update the settings for an existing phone number on your account
-     * See Intro to Account Phone Numbers for more info on the properties.
+     * Update the settings for an existing phone number on your account. See Account Phone Numbers for more info on the properties.
+     * @summary Update the settings for an existing phone number on your account.
      * @param accountId Account ID
      * @param numberId Number ID
      * @param data Phone Number data
@@ -6242,7 +8541,7 @@ export enum QueuesApiApiKeys {
 }
 
 export class QueuesApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -6268,12 +8567,24 @@ export class QueuesApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: QueuesApiApiKeys, value: string) {
         this.authentications[QueuesApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Create a queue
-     * For more on the input fields, see Account Queues.
+     * Create a queue. See Account Queues for more info on the properties.
+     * @summary Create a queue.
      * @param accountId Account ID
      * @param data Queue data
      */
@@ -6328,12 +8639,12 @@ export class QueuesApi {
         });
     }
     /**
-     * Delete a queue
-     * This service a queue from the account. For more information on queue properties, see Account Queues.
+     * Delete a queue. See Account Queues for more info on the properties.
+     * @summary Delete a queue.
      * @param accountId Account ID
      * @param queueId Queue ID
      */
-    public deleteAccountQueue (accountId: number, queueId: number) : Promise<{ response: http.ClientResponse; body: DeleteQueue;  }> {
+    public deleteAccountQueue (accountId: number, queueId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/queues/{queue_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
             .replace('{' + 'queue_id' + '}', String(queueId));
@@ -6374,7 +8685,7 @@ export class QueuesApi {
                 requestOptions.form = formParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: DeleteQueue;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
             request(requestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -6389,8 +8700,8 @@ export class QueuesApi {
         });
     }
     /**
-     * Show details of an individual queue
-     * This service shows the details of an individual queue. For more on the input fields, see Account Queues.
+     * Show details of an individual queue. See Account Queues for more info on the properties.
+     * @summary Show details of an individual queue.
      * @param accountId Account ID
      * @param queueId Queue ID
      */
@@ -6450,8 +8761,8 @@ export class QueuesApi {
         });
     }
     /**
-     * Get a list of queues for an account
-     * The List Queues service lists all the queues belong to the account. See Account Queues for more info on the properties.
+     * Get a list of queues for an account. See Account Queues for more info on the properties.
+     * @summary Get a list of queues for an account.
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -6539,8 +8850,8 @@ export class QueuesApi {
         });
     }
     /**
-     * Replace a queue
-     * The Replace Queue service replaces the parameters of a queue. For more on the input fields, see Account Queues.
+     * Replace a queue. See Account Queues for more info on the properties.
+     * @summary Replace a queue.
      * @param accountId Account ID
      * @param queueId Queue ID
      * @param data Queue data
@@ -6607,7 +8918,7 @@ export enum RoutesApiApiKeys {
 }
 
 export class RoutesApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -6633,12 +8944,24 @@ export class RoutesApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: RoutesApiApiKeys, value: string) {
         this.authentications[RoutesApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Add a new address book contact for an extension
-     * For more on the input fields, see Intro to Routes.
+     * Add a new route to the account. See Intro to Routes for more info on the properties.
+     * @summary Add a new route to the account.
      * @param accountId Account ID
      * @param data Route data
      */
@@ -6693,12 +9016,12 @@ export class RoutesApi {
         });
     }
     /**
-     * 
-     * 
+     * Delete a route from the account. See Intro to Routes for more info on the properties.
+     * @summary Delete a route from the account.
      * @param accountId Account ID
      * @param routeId Route ID
      */
-    public deleteAccountRoute (accountId: number, routeId: number) : Promise<{ response: http.ClientResponse; body: DeleteRoute;  }> {
+    public deleteAccountRoute (accountId: number, routeId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/routes/{route_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
             .replace('{' + 'route_id' + '}', String(routeId));
@@ -6739,7 +9062,7 @@ export class RoutesApi {
                 requestOptions.form = formParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: DeleteRoute;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
             request(requestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -6754,8 +9077,8 @@ export class RoutesApi {
         });
     }
     /**
-     * Show details of an individual route
-     * This service shows the details of an individual route.
+     * Show details of an individual route. See Intro to Routes for more info on the properties.
+     * @summary Show details of an individual route.
      * @param accountId Account ID
      * @param routeId Route ID
      */
@@ -6815,8 +9138,8 @@ export class RoutesApi {
         });
     }
     /**
-     * Get a list of routes for an account
-     * See Intro to Routes for more info on the properties.
+     * Get a list of routes for an account. See Intro to Routes for more info on the properties.
+     * @summary Get a list of routes for an account.
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -6904,8 +9227,8 @@ export class RoutesApi {
         });
     }
     /**
-     * 
-     * For more on the input fields, see Intro to Routes.
+     * Update the information of a route. See Intro to Routes for more info on the properties.
+     * @summary Update the information of a route.
      * @param accountId Account ID
      * @param routeId Route ID
      * @param data Route data
@@ -6972,7 +9295,7 @@ export enum SchedulesApiApiKeys {
 }
 
 export class SchedulesApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -6998,12 +9321,24 @@ export class SchedulesApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: SchedulesApiApiKeys, value: string) {
         this.authentications[SchedulesApiApiKeys[key]].apiKey = value;
     }
     /**
      * Show details of an individual schedule
-     * This service shows the details of an individual schedule.
+     * @summary Show details of an individual schedule
      * @param accountId Account ID
      * @param scheduleId Schedule ID
      */
@@ -7064,7 +9399,7 @@ export class SchedulesApi {
     }
     /**
      * Get a list of schedules for an account
-     * See Intro to Schedules for more info on the properties.
+     * @summary Get a list of schedules for an account
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -7157,7 +9492,7 @@ export enum SmsApiApiKeys {
 }
 
 export class SmsApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -7183,12 +9518,24 @@ export class SmsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: SmsApiApiKeys, value: string) {
         this.authentications[SmsApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Send a SMS to one or a group of recipients
-     * For more on the input fields, see Intro to SMS.
+     * Send a SMS to one or a group of recipients. For details on the input fields, see Intro to SMS. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level Create SMS API with the following definition: POST https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/sms
+     * @summary Send a SMS to one or a group of recipients.
      * @param accountId Account ID
      * @param data SMS data
      */
@@ -7248,8 +9595,8 @@ export class SmsApi {
         });
     }
     /**
-     * Show details of an individual SMS
-     * This service shows the details of an individual sms. See Intro to SMS for more info on the properties.
+     * This service shows the details of an individual SMS. See Intro to SMS for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level Get SMS API with the following definition: GET https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/sms/:sms_id
+     * @summary This service shows the details of an individual SMS.
      * @param accountId Account ID
      * @param smsId SMS ID
      */
@@ -7309,19 +9656,22 @@ export class SmsApi {
         });
     }
     /**
-     * Get a list of SMS messages for an account
-     * See Intro to SMS for more info on the properties.
+     * Get a list of SMS messages for an account. See Intro to SMS for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level List SMS API with the following definition: GET https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/sms
+     * @summary Get a list of SMS messages for an account.
      * @param accountId Account ID
      * @param filters[id] ID filter
-     * @param filters[direction] Direction filter
      * @param filters[from] Caller ID filter
+     * @param filters[to] Callee ID filter, the E.164 phone number to send the SMS TO. Note you must encode the + as %2B
+     * @param filters[direction] Direction filter
+     * @param filters[extension] Extension filter
+     * @param filters[createdAt] Date string representing the UTC time that sms was created
      * @param sort[id] ID sorting
      * @param sort[createdAt] Sort by created time of message
      * @param limit Max results
      * @param offset Results to skip
      * @param fields Field set
      */
-    public listAccountSms (accountId: number, filters[id]?: Array<string>, filters[direction]?: string, filters[from]?: string, sort[id]?: string, sort[createdAt]?: string, limit?: number, offset?: number, fields?: string) : Promise<{ response: http.ClientResponse; body: ListSms;  }> {
+    public listAccountSms (accountId: number, filters[id]?: Array<string>, filters[from]?: string, filters[to]?: string, filters[direction]?: string, filters[extension]?: Array<string>, filters[createdAt]?: string, sort[id]?: string, sort[createdAt]?: string, limit?: number, offset?: number, fields?: string) : Promise<{ response: http.ClientResponse; body: ListSms;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/sms'
             .replace('{' + 'account_id' + '}', String(accountId));
         let queryParameters: any = {};
@@ -7338,12 +9688,24 @@ export class SmsApi {
             queryParameters['filters[id]'] = filters[id];
         }
 
+        if (filters[from] !== undefined) {
+            queryParameters['filters[from]'] = filters[from];
+        }
+
+        if (filters[to] !== undefined) {
+            queryParameters['filters[to]'] = filters[to];
+        }
+
         if (filters[direction] !== undefined) {
             queryParameters['filters[direction]'] = filters[direction];
         }
 
-        if (filters[from] !== undefined) {
-            queryParameters['filters[from]'] = filters[from];
+        if (filters[extension] !== undefined) {
+            queryParameters['filters[extension]'] = filters[extension];
+        }
+
+        if (filters[createdAt] !== undefined) {
+            queryParameters['filters[created_at]'] = filters[createdAt];
         }
 
         if (sort[id] !== undefined) {
@@ -7402,13 +9764,76 @@ export class SmsApi {
             });
         });
     }
+    /**
+     * Update the is_new parameter in a sms record. See Account SMS for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Extension level Patch SMS API with the following definition: PATCH https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/sms/:sms_id
+     * @summary Update the is_new parameter in a sms record.
+     * @param accountId Account ID
+     * @param smsId SMS ID
+     * @param data Sms data
+     */
+    public patchAccountSms (accountId: number, smsId: string, data?: PatchSmsParams) : Promise<{ response: http.ClientResponse; body: SmsFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/sms/{sms_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'sms_id' + '}', String(smsId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling patchAccountSms.');
+        }
+
+        // verify required parameter 'smsId' is not null or undefined
+        if (smsId === null || smsId === undefined) {
+            throw new Error('Required parameter smsId was null or undefined when calling patchAccountSms.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'PATCH',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: SmsFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
 }
-export enum SubaccountsApiApiKeys {
+export enum SubaccountpricingApiApiKeys {
     apiKey,
 }
 
-export class SubaccountsApi {
-    protected basePath = defaultBasePath;
+export class SubaccountpricingApi {
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -7434,14 +9859,363 @@ export class SubaccountsApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: SubaccountpricingApiApiKeys, value: string) {
+        this.authentications[SubaccountpricingApiApiKeys[key]].apiKey = value;
+    }
+    /**
+     * Add a pricing plan to a subaccount. See Account Subaccount Pricing for more info on the properties.
+     * @summary Add a pricing plan to a subaccount.
+     * @param accountId Account ID
+     * @param subaccountId Subaccount ID
+     * @param data Subaccount pricing data
+     */
+    public createAccountSubaccountPricing (accountId: number, subaccountId: number, data: CreatePricingParams) : Promise<{ response: http.ClientResponse; body: PricingFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/subaccounts/{subaccount_id}/pricing'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'subaccount_id' + '}', String(subaccountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling createAccountSubaccountPricing.');
+        }
+
+        // verify required parameter 'subaccountId' is not null or undefined
+        if (subaccountId === null || subaccountId === undefined) {
+            throw new Error('Required parameter subaccountId was null or undefined when calling createAccountSubaccountPricing.');
+        }
+
+        // verify required parameter 'data' is not null or undefined
+        if (data === null || data === undefined) {
+            throw new Error('Required parameter data was null or undefined when calling createAccountSubaccountPricing.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'POST',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: PricingFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Delete a pricing plan from a subaccount. See Account Subaccount Pricing for more info on the properties.
+     * @summary Delete a pricing plan from a subaccount.
+     * @param accountId Account ID
+     * @param subaccountId Subaccount ID
+     * @param pricingId Pricing Object ID
+     */
+    public deleteAccountSubaccountPricing (accountId: number, subaccountId: number, pricingId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/subaccounts/{subaccount_id}/pricing/{pricing_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'subaccount_id' + '}', String(subaccountId))
+            .replace('{' + 'pricing_id' + '}', String(pricingId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling deleteAccountSubaccountPricing.');
+        }
+
+        // verify required parameter 'subaccountId' is not null or undefined
+        if (subaccountId === null || subaccountId === undefined) {
+            throw new Error('Required parameter subaccountId was null or undefined when calling deleteAccountSubaccountPricing.');
+        }
+
+        // verify required parameter 'pricingId' is not null or undefined
+        if (pricingId === null || pricingId === undefined) {
+            throw new Error('Required parameter pricingId was null or undefined when calling deleteAccountSubaccountPricing.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'DELETE',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get the details of a pricing plan for a subaccount. See Account Subaccount Pricing for more info on the properties.
+     * @summary Get the details of a pricing plan for a subaccount.
+     * @param accountId Account ID
+     * @param subaccountId Subaccount ID
+     * @param pricingId Pricing Object ID
+     */
+    public getAccountSubaccountPricing (accountId: number, subaccountId: number, pricingId: number) : Promise<{ response: http.ClientResponse; body: PricingFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/subaccounts/{subaccount_id}/pricing/{pricing_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'subaccount_id' + '}', String(subaccountId))
+            .replace('{' + 'pricing_id' + '}', String(pricingId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling getAccountSubaccountPricing.');
+        }
+
+        // verify required parameter 'subaccountId' is not null or undefined
+        if (subaccountId === null || subaccountId === undefined) {
+            throw new Error('Required parameter subaccountId was null or undefined when calling getAccountSubaccountPricing.');
+        }
+
+        // verify required parameter 'pricingId' is not null or undefined
+        if (pricingId === null || pricingId === undefined) {
+            throw new Error('Required parameter pricingId was null or undefined when calling getAccountSubaccountPricing.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: PricingFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get a list of pricing plans for a subaccount. See Account Subaccount Pricing for more info on the properties.
+     * @summary Get a list of pricing plans for a subaccount.
+     * @param accountId Account ID
+     * @param subaccountId Subaccount ID
+     * @param filters[id] ID filter
+     * @param sort[id] ID sorting
+     * @param limit Max results
+     * @param offset Results to skip
+     * @param fields Field set
+     */
+    public listAccountSubaccountPricing (accountId: number, subaccountId: number, filters[id]?: Array<string>, sort[id]?: string, limit?: number, offset?: number, fields?: string) : Promise<{ response: http.ClientResponse; body: ListPricings;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/subaccounts/{subaccount_id}/pricing'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'subaccount_id' + '}', String(subaccountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling listAccountSubaccountPricing.');
+        }
+
+        // verify required parameter 'subaccountId' is not null or undefined
+        if (subaccountId === null || subaccountId === undefined) {
+            throw new Error('Required parameter subaccountId was null or undefined when calling listAccountSubaccountPricing.');
+        }
+
+        if (filters[id] !== undefined) {
+            queryParameters['filters[id]'] = filters[id];
+        }
+
+        if (sort[id] !== undefined) {
+            queryParameters['sort[id]'] = sort[id];
+        }
+
+        if (limit !== undefined) {
+            queryParameters['limit'] = limit;
+        }
+
+        if (offset !== undefined) {
+            queryParameters['offset'] = offset;
+        }
+
+        if (fields !== undefined) {
+            queryParameters['fields'] = fields;
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListPricings;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum SubaccountsApiApiKeys {
+    apiKey,
+}
+
+export class SubaccountsApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'apiKey': new ApiKeyAuth('header', 'Authorization'),
+    }
+
+    constructor(basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: SubaccountsApiApiKeys, value: string) {
         this.authentications[SubaccountsApiApiKeys[key]].apiKey = value;
     }
     /**
      * Add a subaccount for the authenticated user or client
-     * This service shows the details of an individual Subaccount.
+     * @summary Add a subaccount for the authenticated user or client
      * @param accountId Account ID
-     * @param data SMS data
+     * @param data Subaccount data
      */
     public createAccountSubaccount (accountId: number, data: CreateSubaccountParams) : Promise<{ response: http.ClientResponse; body: AccountFull;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/subaccounts'
@@ -7500,7 +10274,7 @@ export class SubaccountsApi {
     }
     /**
      * Get a list of subaccounts for the authenticated user or client
-     * This service lists the Subaccount of the authenticated client. In most cases, there will not be any.
+     * @summary Get a list of subaccounts for the authenticated user or client
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param sort[id] ID sorting
@@ -7583,7 +10357,7 @@ export enum TrunksApiApiKeys {
 }
 
 export class TrunksApi {
-    protected basePath = defaultBasePath;
+    protected _basePath = defaultBasePath;
     protected defaultHeaders : any = {};
     protected _useQuerystring : boolean = false;
 
@@ -7609,12 +10383,24 @@ export class TrunksApi {
         this._useQuerystring = value;
     }
 
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
     public setApiKey(key: TrunksApiApiKeys, value: string) {
         this.authentications[TrunksApiApiKeys[key]].apiKey = value;
     }
     /**
-     * Add a trunk record with SIP information
-     * For more on the input fields, see Account Trunks.
+     * Add a trunk record with SIP information. See Account Trunks for more info on the properties.
+     * @summary Add a trunk record with SIP information.
      * @param accountId Account ID
      * @param data Trunk data
      */
@@ -7674,12 +10460,12 @@ export class TrunksApi {
         });
     }
     /**
-     * Delete a trunk from account
-     * This service deletes a trunk from the account. For more on the properties of trunks, see Account Trunks.
+     * Delete a trunk from account. See Account Trunks for more info on the properties.
+     * @summary Delete a trunk from account.
      * @param accountId Account ID
      * @param trunkId Trunk ID
      */
-    public deleteAccountTrunk (accountId: number, trunkId: number) : Promise<{ response: http.ClientResponse; body: DeleteTrunk;  }> {
+    public deleteAccountTrunk (accountId: number, trunkId: number) : Promise<{ response: http.ClientResponse; body: DeleteEntry;  }> {
         const localVarPath = this.basePath + '/accounts/{account_id}/trunks/{trunk_id}'
             .replace('{' + 'account_id' + '}', String(accountId))
             .replace('{' + 'trunk_id' + '}', String(trunkId));
@@ -7720,7 +10506,7 @@ export class TrunksApi {
                 requestOptions.form = formParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: DeleteTrunk;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: DeleteEntry;  }>((resolve, reject) => {
             request(requestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -7735,8 +10521,8 @@ export class TrunksApi {
         });
     }
     /**
-     * Show details of an individual trunk
-     * This service shows the details of an individual Trunk.
+     * Show details of an individual trunk. See Account Trunks for more info on the properties.
+     * @summary Show details of an individual trunk.
      * @param accountId Account ID
      * @param trunkId Trunk ID
      */
@@ -7796,8 +10582,8 @@ export class TrunksApi {
         });
     }
     /**
-     * Get a list of trunks for an account
-     * See Account Trunks for more info on the properties.
+     * Get a list of trunks for an account. See Account Trunks for more info on the properties.
+     * @summary Get a list of trunks for an account.
      * @param accountId Account ID
      * @param filters[id] ID filter
      * @param filters[name] Name filter
@@ -7885,8 +10671,8 @@ export class TrunksApi {
         });
     }
     /**
-     * Replace parameters in a trunk
-     * For more on the input fields, see Account Trunks.
+     * Replace parameters in a trunk. See Account Trunks for more info on the properties.
+     * @summary Replace parameters in a trunk.
      * @param accountId Account ID
      * @param trunkId Trunk ID
      * @param data Trunk data
@@ -7939,6 +10725,286 @@ export class TrunksApi {
             }
         }
         return new Promise<{ response: http.ClientResponse; body: TrunkFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum VoicemailApiApiKeys {
+    apiKey,
+}
+
+export class VoicemailApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'apiKey': new ApiKeyAuth('header', 'Authorization'),
+    }
+
+    constructor(basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: VoicemailApiApiKeys, value: string) {
+        this.authentications[VoicemailApiApiKeys[key]].apiKey = value;
+    }
+    /**
+     * This service shows the details of an individual voicemail. See Intro to Voicemail for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Get Voicemail API with the following definition: GET https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/voicemail/:voicemail_id
+     * @summary This service shows the details of an individual voicemail.
+     * @param accountId Account ID
+     * @param voicemailId Voicemail ID
+     */
+    public getAccountVoicemail (accountId: number, voicemailId: string) : Promise<{ response: http.ClientResponse; body: VoicemailFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/voicemail/{voicemail_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'voicemail_id' + '}', String(voicemailId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling getAccountVoicemail.');
+        }
+
+        // verify required parameter 'voicemailId' is not null or undefined
+        if (voicemailId === null || voicemailId === undefined) {
+            throw new Error('Required parameter voicemailId was null or undefined when calling getAccountVoicemail.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: VoicemailFull;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Get a list of voicemail messages for an account. See Intro to Voicemail for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the List Voicemail API with the following definition: GET https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/voicemail
+     * @summary Get a list of voicemail messages for an account.
+     * @param accountId Account ID
+     * @param filters[id] ID filter
+     * @param filters[from] Caller ID filter
+     * @param filters[to] Callee ID filter, the E.164 phone number to send the SMS TO. Note you must encode the + as %2B
+     * @param filters[isNew] 
+     * @param filters[createdAt] Date string representing the UTC time that sms was created
+     * @param filters[extension] Extension filter
+     * @param sort[id] ID sorting
+     * @param sort[createdAt] Sort by the UTC time that voicemail was created
+     * @param limit Max results
+     * @param offset Results to skip
+     * @param fields Field set
+     */
+    public listAccountVoicemail (accountId: number, filters[id]?: Array<string>, filters[from]?: string, filters[to]?: string, filters[isNew]?: boolean, filters[createdAt]?: string, filters[extension]?: Array<string>, sort[id]?: string, sort[createdAt]?: string, limit?: number, offset?: number, fields?: string) : Promise<{ response: http.ClientResponse; body: ListVoicemail;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/voicemail'
+            .replace('{' + 'account_id' + '}', String(accountId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling listAccountVoicemail.');
+        }
+
+        if (filters[id] !== undefined) {
+            queryParameters['filters[id]'] = filters[id];
+        }
+
+        if (filters[from] !== undefined) {
+            queryParameters['filters[from]'] = filters[from];
+        }
+
+        if (filters[to] !== undefined) {
+            queryParameters['filters[to]'] = filters[to];
+        }
+
+        if (filters[isNew] !== undefined) {
+            queryParameters['filters[is_new]'] = filters[isNew];
+        }
+
+        if (filters[createdAt] !== undefined) {
+            queryParameters['filters[created_at]'] = filters[createdAt];
+        }
+
+        if (filters[extension] !== undefined) {
+            queryParameters['filters[extension]'] = filters[extension];
+        }
+
+        if (sort[id] !== undefined) {
+            queryParameters['sort[id]'] = sort[id];
+        }
+
+        if (sort[createdAt] !== undefined) {
+            queryParameters['sort[created_at]'] = sort[createdAt];
+        }
+
+        if (limit !== undefined) {
+            queryParameters['limit'] = limit;
+        }
+
+        if (offset !== undefined) {
+            queryParameters['offset'] = offset;
+        }
+
+        if (fields !== undefined) {
+            queryParameters['fields'] = fields;
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'GET',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ListVoicemail;  }>((resolve, reject) => {
+            request(requestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     * Update the is_new parameter in a voicemail record. See Account Voicemail for more info on the properties. Note: This API is for users with Account Owner scope access token. Users with Extension User scope token should invoke the Patch Voicemail API with the following definition: PATCH https://api.phone.com/v4/accounts/:account_id/extensions/:extension_id/voicemail/:voicemail_id
+     * @summary Update the is_new parameter in a voicemail record.
+     * @param accountId Account ID
+     * @param voicemailId Voicemail ID
+     * @param data Payment data
+     */
+    public patchAccountVoicemail (accountId: number, voicemailId: string, data?: PatchVoicemailParams) : Promise<{ response: http.ClientResponse; body: VoicemailFull;  }> {
+        const localVarPath = this.basePath + '/accounts/{account_id}/voicemail/{voicemail_id}'
+            .replace('{' + 'account_id' + '}', String(accountId))
+            .replace('{' + 'voicemail_id' + '}', String(voicemailId));
+        let queryParameters: any = {};
+        let headerParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let formParams: any = {};
+
+
+        // verify required parameter 'accountId' is not null or undefined
+        if (accountId === null || accountId === undefined) {
+            throw new Error('Required parameter accountId was null or undefined when calling patchAccountVoicemail.');
+        }
+
+        // verify required parameter 'voicemailId' is not null or undefined
+        if (voicemailId === null || voicemailId === undefined) {
+            throw new Error('Required parameter voicemailId was null or undefined when calling patchAccountVoicemail.');
+        }
+
+        let useFormData = false;
+
+        let requestOptions: request.Options = {
+            method: 'PATCH',
+            qs: queryParameters,
+            headers: headerParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: data,
+        };
+
+        this.authentications.apiKey.applyToRequest(requestOptions);
+
+        this.authentications.default.applyToRequest(requestOptions);
+
+        if (Object.keys(formParams).length) {
+            if (useFormData) {
+                (<any>requestOptions).formData = formParams;
+            } else {
+                requestOptions.form = formParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: VoicemailFull;  }>((resolve, reject) => {
             request(requestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
